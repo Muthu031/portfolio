@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            background: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: column;
+            height: 100%;
+            padding-top: 130px;
+            /* Add space for fixed header */
+            position: relative;
+        }
+
+        header {
+            background: linear-gradient(90deg, #333, #4caf50);
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+            position: fixed;
+            /* Fixed position */
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        nav ul li {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        nav ul li:hover {
+            color: #ffeb3b;
+        }
+
+        section {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            scroll-margin-top: 80px;
+        }
+
+        .container {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .about,
+        .projects,
+        .contact {
+            background: #fff;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: justify;
+        }
+
+        .about h2,
+        .projects h2,
+        .contact h2 {
+            margin-top: 0;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .projects .project-item {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: left;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .projects .project-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem 0;
+            background: #333;
+            color: #fff;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .contact {
+            background: #fff;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: justify;
+            width: 100%;
+            /* Make the contact section full-width */
+            box-sizing: border-box;
+            /* Ensure padding is included in the width */
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        footer a {
+            color: #4caf50;
+            text-decoration: none;
+        }
+
+        /* Snowfall effect */
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            pointer-events: none;
+            font-size: 0.5rem;
+            /* Reduced the font size to make the snowflakes smaller */
+            opacity: 0.8;
+            background: linear-gradient(135deg, rgba(200, 200, 200, 0.9), rgba(180, 180, 180, 0.7));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: fall 10s linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateX(0) translateY(0);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateX(50px) translateY(100vh);
+                opacity: 0.2;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Muthukumaran Portfolio</h1>
+        <nav>
+            <ul>
+                <li onclick="showSection('about')">About</li>
+                <li onclick="showSection('projects')">Projects</li>
+                <li onclick="showSection('contact')">Contact</li>
+            </ul>
+        </nav>
+    </header>
+
+    <div id="about" class="container about">
+        <h2>About Me ❤️</h2>
+        <p>Hello! My name is Muthukumaran. I am currently working at Skandavel Digitals Private Limited in Tiruchendur.
+            I have strong coding skills in Java, Node.js, JavaScript, CSS, and HTML. Additionally,
+            I possess excellent soft skills including team management, teamwork, being a quick learner, a positive
+            thinker, and having good communication skills. I hold a CGPA of 8.5%.</p>
+    </div>
+
+    <div id="projects" class="container projects">
+        <h2>My Projects</h2>
+        <div class="project-item">
+            <h3>Auction App ❤️</h3>
+            <p>The Auction App helps farmers sell their vegetables and fruits at competitive prices, maximizing
+                their profits. Sellers can list their produce, set prices, and auction them to potential buyers.
+                Buyers can place bids, ensuring fair pricing and market competition. The app facilitates real-time
+                bidding, making the process quick and transparent.</p>
+        </div>
+        <div class="project-item">
+            <h3>Task Tracker ❤️</h3>
+            <p>The Task Tracker is a web app that helps users manage tasks efficiently. It allows adding, editing,
+                deleting, and tracking tasks. Tasks can be categorized and prioritized for better organization.
+                Users can securely log in and access their tasks, with progress tracking and due date reminders.</p>
+        </div>
+        <div class="project-item">
+            <h3>Neet MCQ ❤️</h3>
+            <p>The NEET MCQ App is designed to help students prepare effectively for the National Eligibility cum
+                Entrance Test (NEET) by providing a wide range of practice questions and mock exams.</p>
+        </div>
+    </div>
+
+    <div id="contact" class="container contact">
+        <h2>Contact Me</h2>
+        <p>If you'd like to get in touch, email me at <a href="mailto:muthukumaran6967@gmail.com">muthukumaran6967@gmail.com</a>.</p>
+        <p>Alternatively, you can reach me on my mobile at <a href="tel:+918838336941">+91 8838336941</a>.</p>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Muthukumaran. Built with ❤️ and passion.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script>
+        window.addEventListener('load', function () {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        });
+
+        function showSection(section) {
+            const sections = document.querySelectorAll('.container');
+            sections.forEach(sec => sec.classList.remove('active'));
+            document.getElementById(section).classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            showSection('about');
+        });
+
+        function generateSnowflakes() {
+            const numFlakes = 50;
+            const snowflakeContainer = document.body;
+
+            for (let i = 0; i < numFlakes; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+                snowflake.textContent = '❄';
+
+                snowflake.style.left = `${Math.random() * 100}vw`;
+                snowflake.style.animationDuration = `${Math.random() * 10 + 5}s`;
+
+                const color1 = `hsl(${Math.random() * 360}, 100%, 80%)`;
+                const color2 = `hsl(${Math.random() * 360}, 100%, 70%)`;
+                snowflake.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+
+                snowflakeContainer.appendChild(snowflake);
+            }
+        }
+
+        generateSnowflakes();
+    </script>
+</body>
+
+</html>
