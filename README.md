@@ -125,6 +125,162 @@ Drop your PDF as `public/resume.pdf` — the "Download Resume" button in the Her
 
 ---
 
+## Deploying to Vercel (with GitHub Actions CI/CD)
+
+This project ships with a fully automated pipeline in `.github/workflows/deploy.yml`.  
+Every push to `main` runs a type-check + build, then deploys to production automatically.  
+Pull requests get a live preview URL posted as a PR comment.
+
+### Prerequisites
+- A [GitHub](https://github.com) account with this project pushed to a repository
+- A [Vercel](https://vercel.com) account (free tier is enough)
+
+---
+
+### Step 1 — Push the project to GitHub
+
+If you haven't already:
+
+```bash
+git init
+git add .
+git commit -m "initial commit"
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+git push -u origin main
+```
+
+---
+
+### Step 2 — Install the Vercel CLI and link the project
+
+Run these commands **once, locally**. You only ever do this once.
+
+```bash
+# Install Vercel CLI globally
+npm install -g vercel
+
+# Log in — a browser window opens, sign in with your GitHub account
+vercel login
+
+# Inside the portfolio folder, link this project to Vercel
+cd "C:\Users\USER\Documents\SKD\portfolio"
+vercel link
+```
+
+The `vercel link` command will ask:
+- **Set up and deploy?** → Yes
+- **Which scope?** → Your personal account
+- **Link to existing project?** → No (create a new one)
+- **Project name?** → `portfolio` (or any name you like)
+- **In which directory is your code?** → `./` (just press Enter)
+
+After it finishes, a `.vercel/project.json` file is created. Open it:
+
+```bash
+cat .vercel/project.json
+```
+
+It looks like this — **copy both values**:
+
+```json
+{
+  "orgId": "team_xxxxxxxxxxxxxxxxxxxx",
+  "projectId": "prj_xxxxxxxxxxxxxxxxxxxx"
+}
+```
+
+Then **delete** the `.vercel/` folder — it is already in `.gitignore` and must not be committed:
+
+```bash
+# PowerShell
+Remove-Item -Recurse -Force .vercel
+```
+
+---
+
+### Step 3 — Create a Vercel personal access token
+
+1. Go to [vercel.com/account/tokens](https://vercel.com/account/tokens)
+2. Click **Create Token**
+3. Give it a name like `github-actions-portfolio`
+4. Set expiration to **No Expiration** (or 1 year if you prefer to rotate it)
+5. Click **Create** — **copy the token immediately**, Vercel will never show it again
+
+---
+
+### Step 4 — Add the 3 secrets to GitHub
+
+Go to your GitHub repository → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+
+Add these three secrets one by one:
+
+| Secret Name | Value |
+|---|---|
+| `VERCEL_TOKEN` | The token you just created in Step 3 |
+| `VERCEL_ORG_ID` | The `orgId` value from `.vercel/project.json` |
+| `VERCEL_PROJECT_ID` | The `projectId` value from `.vercel/project.json` |
+
+> **Important:** These values only ever live inside GitHub's encrypted secret store.  
+> They are never stored in this repository or any file you commit.
+
+---
+
+### Step 5 — Push any commit to trigger the first deployment
+
+```bash
+git add .
+git commit -m "add vercel deployment config"
+git push origin main
+```
+
+Go to your GitHub repo → **Actions** tab.  
+You will see the workflow running — CI check → deploy to production.  
+When it finishes (≈ 2 minutes), your live URL appears on the Vercel dashboard.
+
+---
+
+### How the pipeline works after setup
+
+```
+Push to main
+    │
+    ▼
+┌─────────────────────┐
+│  CI: tsc --noEmit   │  ← fails fast if there are type errors
+│  npm run build      │  ← fails fast if the bundle breaks
+└────────┬────────────┘
+         │ passes
+         ▼
+┌─────────────────────┐
+│  Deploy → Production│  ← your live portfolio URL
+└─────────────────────┘
+
+Open a Pull Request
+    │
+    ▼
+┌─────────────────────┐
+│  CI: type-check     │
+│  + build            │
+└────────┬────────────┘
+         │ passes
+         ▼
+┌─────────────────────┐
+│  Deploy → Preview   │  ← unique URL per PR
+│  Post URL on PR     │  ← comment added automatically
+└─────────────────────┘
+```
+
+---
+
+### Configure your custom domain (optional)
+
+1. Vercel Dashboard → your project → **Settings** → **Domains**
+2. Click **Add Domain** → enter your domain (e.g. `muthukumaran.dev`)
+3. Add the DNS records Vercel shows you at your domain registrar
+4. Vercel provisions a free SSL certificate automatically
+
+---
+
 ## Contact
 
 **Muthukumaran S**

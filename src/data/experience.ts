@@ -53,4 +53,18 @@ export const experiences: Experience[] = [
     lettermark: 'MS',       // Personal initials (Muthukumaran S)
     color: '#a78bfa',       // Violet accent colour
   },
+  {
+    // ── Education: B.Tech — Information Technology ──
+    id: 'btech',
+    title: 'B.Tech — Information Technology',
+    company: 'Jayaraj Annapackiam CSI College of Engineering, Anna University',
+    period: '2019 – 2023',
+    achievements: [
+      'Graduated in Information Technology with focus on full-stack development, data structures, algorithms, and database systems.',
+      'Final year GPA 7.8/10 — Capstone project (AttendTrack) received highest evaluation score in the department.',
+      'Coursework included Operating Systems, Computer Networks, DBMS, OOP, Compiler Design, and Software Engineering — providing strong CS fundamentals for product engineering roles.',
+    ],
+    lettermark: 'BT',
+    color: '#34d399',       // Emerald green accent
+  },
 ];

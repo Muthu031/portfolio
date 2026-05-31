@@ -14,7 +14,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Twitter, Mail, ChevronDown, Download, ArrowRight } from 'lucide-react';
+import { Github, Linkedin, Twitter, Mail, ChevronDown, Download, ArrowRight, Code2 } from 'lucide-react';
 import { TypewriterText } from '../ui/TypewriterText';
 import { Button } from '../ui/Button';
 
@@ -147,6 +147,7 @@ const ParticleCanvas: React.FC = () => {
 const SOCIALS = [
   { icon: <Github size={18} />,   href: 'https://github.com/Muthu031',                         label: 'GitHub' },
   { icon: <Linkedin size={18} />, href: 'https://www.linkedin.com/in/muthukumaran-s/',         label: 'LinkedIn' },
+  { icon: <Code2 size={18} />,    href: 'https://leetcode.com/u/Muthukumaran_S/',              label: 'LeetCode' },
   { icon: <Twitter size={18} />,  href: 'https://twitter.com/muthukumaran_s',                  label: 'Twitter / X' },
   { icon: <Mail size={18} />,     href: 'mailto:muthukumaran6967@gmail.com',                   label: 'Email' },
 ];
@@ -220,6 +221,7 @@ export const Hero: React.FC = () => (
           <TypewriterText
             texts={[
               'Full Stack Developer',
+              'Backend Engineer',
               'System Architect',
               'API Craftsman',
               'Problem Solver',

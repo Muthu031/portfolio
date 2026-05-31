@@ -15,9 +15,9 @@ import { Stat, TimelineMilestone } from '../../types';
 
 // Four highlight numbers shown in the stats grid
 const STATS: Stat[] = [
-  { numericValue: 2,  prefix: '', suffix: '+', label: 'Years Experience' },
-  { numericValue: 4,  prefix: '', suffix: '+', label: 'Products Shipped' },
-  { numericValue: 5,  prefix: '', suffix: '+', label: 'Tech Stacks' },
+  { numericValue: 3,  prefix: '', suffix: '+', label: 'Years Experience' },
+  { numericValue: 5,  prefix: '', suffix: '+', label: 'Products Shipped' },
+  { numericValue: 8,  prefix: '', suffix: '+', label: 'Tech Stacks' },
   { numericValue: 0,  prefix: '∞', suffix: '', label: 'Coffee Consumed' }, // numericValue 0 means "just show the prefix"
 ];
 
@@ -35,8 +35,9 @@ const TRAITS = [
   'API Craftsman',
   'PostgreSQL Optimizer',
   'TypeScript Strict Mode',
+  'System Design',
+  'Data Structures & Algorithms',
   'Clean Code Advocate',
-  'Debugging Ninja',
   'Auth & Security Minded',
   'Ship & Iterate',
 ];

@@ -80,4 +80,16 @@ export const skillCategories: SkillCategory[] = [
       { name: 'Debugging',       icon: '🐛', proficiency: 'Expert',     level: 92 },
     ],
   },
+  {
+    // ── Category 6: Problem Solving & DSA ──
+    title: 'Problem Solving & DSA',
+    icon: '🧠',
+    color: '#f97316', // Orange for algorithms / problem solving
+    skills: [
+      { name: 'Data Structures', icon: '🏗️', proficiency: 'Advanced', level: 82 },
+      { name: 'Algorithms',      icon: '⚙️', proficiency: 'Advanced', level: 80 },
+      { name: 'LeetCode',        icon: '🟩', proficiency: 'Advanced', level: 78 },
+      { name: 'System Design',   icon: '🗺️', proficiency: 'Advanced', level: 80 },
+    ],
+  },
 ];

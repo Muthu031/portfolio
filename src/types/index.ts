@@ -24,7 +24,7 @@ export interface Project {
   description: string;   // Longer paragraph describing the project
   techStack: TechChip[]; // List of technology chips
   githubUrl: string;     // Link to the GitHub repository
-  liveUrl: string;       // Link to the live/demo deployment
+  liveUrl: string | null; // Link to the live/demo deployment; null = enterprise/private
   badge: 'Featured' | 'Open Source'; // Label shown in the top corner of the card
   accentColor: string;   // Hex colour used to style this project's card (e.g. "#00f5ff")
   mockType: 'editor' | 'ecommerce' | 'dashboard' | 'auth'; // Which fake UI preview to show

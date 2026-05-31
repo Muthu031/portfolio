@@ -189,7 +189,7 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, i
           ))}
         </div>
 
-        {/* Action buttons: Source (GitHub) + Live Demo */}
+        {/* Action buttons: Source (GitHub) + Live Demo / Private */}
         <div className="flex items-center gap-3 flex-wrap">
           <Button
             href={project.githubUrl}
@@ -202,17 +202,26 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, i
           >
             Source
           </Button>
-          <Button
-            href={project.liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="primary"
-            size="sm"
-            icon={<ExternalLink size={14} />}
-            aria-label={`View ${project.title} live demo`}
-          >
-            Live Demo
-          </Button>
+          {project.liveUrl ? (
+            <Button
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="primary"
+              size="sm"
+              icon={<ExternalLink size={14} />}
+              aria-label={`View ${project.title} live demo`}
+            >
+              Live Demo
+            </Button>
+          ) : (
+            <span
+              className="font-mono text-xs px-3 py-1.5 border border-white/10 text-muted rounded-sm"
+              title="Enterprise project — source under NDA"
+            >
+              🔒 Enterprise / Private
+            </span>
+          )}
         </div>
       </div>
     </motion.article>

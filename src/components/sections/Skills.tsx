@@ -153,7 +153,7 @@ export const Skills: React.FC = () => (
         transition={{ duration: 0.6 }}
       >
         <span className="font-mono text-electric text-sm tracking-widest">// 02</span>
-        <h2 className="font-mono text-3xl md:text-4xl font-bold text-cream">My Arsenal</h2>
+        <h2 className="font-mono text-3xl md:text-4xl font-bold text-cream">Technical Skills</h2>
         <div className="flex-1 h-px bg-gradient-to-r from-electric/30 to-transparent" aria-hidden="true" />
       </motion.div>
 

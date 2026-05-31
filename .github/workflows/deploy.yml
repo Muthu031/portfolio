@@ -1,0 +1,180 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# CI / CD Pipeline — Portfolio (Vercel)
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Two trigger paths:
+#   push → main   : CI check → deploy to PRODUCTION
+#   pull_request  : CI check → deploy PREVIEW, post URL as PR comment
+#
+# Required GitHub repository secrets  (Settings → Secrets → Actions):
+#   VERCEL_TOKEN       — Vercel personal access token (never commit this)
+#   VERCEL_ORG_ID      — from .vercel/project.json after `vercel link`
+#   VERCEL_PROJECT_ID  — from .vercel/project.json after `vercel link`
+#
+# HOW TO GET THOSE VALUES (one-time setup — do this locally, never commit):
+#   1.  npm i -g vercel
+#   2.  vercel login
+#   3.  vercel link   (inside the project folder)
+#   4.  cat .vercel/project.json   → copy orgId and projectId
+#   5.  Vercel Dashboard → Account Settings → Tokens → Create  → copy token
+#   6.  Add all three as GitHub secrets (repo Settings → Secrets → Actions).
+#   7.  Delete .vercel/ locally (it is already in .gitignore).
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: CI / Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Least-privilege permissions — only what each job actually needs
+permissions:
+  contents: read        # checkout
+  pull-requests: write  # post preview URL comment on PRs
+
+# Cancel any in-flight run for the same branch/PR to avoid parallel deploys
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# ─── Job 1: Type-check + Build (runs on every push and PR) ───────────────────
+jobs:
+  ci:
+    name: Type-check & Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm          # cache ~/.npm between runs — faster installs
+
+      - name: Install dependencies (clean install — no mutations to lockfile)
+        run: npm ci
+
+      - name: TypeScript type-check (no emit — catches type errors without building)
+        run: npx tsc --noEmit
+
+      - name: Production build (fails fast on any bundle error)
+        run: npm run build
+
+  # ─── Job 2: Deploy to Production (main branch pushes only) ─────────────────
+  deploy-production:
+    name: Deploy → Production
+    needs: ci                         # only run after CI passes
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.deployment_url }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Vercel CLI (pinned to stable major)
+        run: npm install --global vercel@latest
+
+      # Pull project metadata + any environment variables from Vercel
+      # VERCEL_TOKEN is injected via secret — never printed or logged
+      - name: Pull Vercel project settings
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      # Build through Vercel's build pipeline (respects vercel.json settings)
+      - name: Build for production via Vercel
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      # Upload the pre-built output — no re-build on Vercel's side
+      - name: Deploy prebuilt artifact to Vercel production
+        id: deploy
+        run: |
+          DEPLOYMENT_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+  # ─── Job 3: Deploy Preview (PRs only) ──────────────────────────────────────
+  deploy-preview:
+    name: Deploy → Preview
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel project settings (preview environment)
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Build preview via Vercel
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy prebuilt artifact to Vercel preview
+        id: deploy
+        run: |
+          PREVIEW_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      # Post a comment on the PR with the live preview link
+      - name: Comment preview URL on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const previewUrl = '${{ steps.deploy.outputs.preview_url }}';
+            const sha        = context.payload.pull_request.head.sha.slice(0, 7);
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner:        context.repo.owner,
+              repo:         context.repo.repo,
+              body: [
+                '## Preview Deployment Ready',
+                '',
+                `**URL:** ${previewUrl}`,
+                `**Commit:** \`${sha}\``,
+                '',
+                '> This preview is automatically updated on every new commit to this PR.',
+              ].join('\n'),
+            });

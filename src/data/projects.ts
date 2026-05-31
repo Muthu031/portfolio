@@ -25,7 +25,7 @@ export const projects: Project[] = [
       { name: 'AWS',        category: 'devops' },
     ],
     githubUrl: 'https://github.com/Muthu031',   // Links to GitHub profile (private repo)
-    liveUrl:   'https://github.com/Muthu031',   // Live demo not publicly available
+    liveUrl:   null,                             // Enterprise NDA — no public demo
     badge: 'Featured',          // Shown as a "Featured" label on the card
     accentColor: '#00f5ff',     // Cyan accent colour for this card
     mockType: 'ecommerce',      // Which fake UI preview component to render
@@ -46,7 +46,7 @@ export const projects: Project[] = [
       { name: 'Zod',        category: 'backend' },
     ],
     githubUrl: 'https://github.com/Muthu031',
-    liveUrl:   'https://github.com/Muthu031',
+    liveUrl:   null,         // Enterprise NDA — no public demo
     badge: 'Featured',
     accentColor: '#ffb800',  // Golden accent colour
     mockType: 'dashboard',   // Dashboard-style mock preview
@@ -66,7 +66,7 @@ export const projects: Project[] = [
       { name: 'PostgreSQL',   category: 'database' },
     ],
     githubUrl: 'https://github.com/Muthu031',
-    liveUrl:   'https://github.com/Muthu031',
+    liveUrl:   'https://github.com/Muthu031',  // Open-source — GitHub is the primary link
     badge: 'Open Source',
     accentColor: '#a78bfa',  // Violet accent colour
     mockType: 'editor',      // Code editor style mock preview
@@ -86,7 +86,7 @@ export const projects: Project[] = [
       { name: 'REST APIs',  category: 'backend' },
     ],
     githubUrl: 'https://github.com/Muthu031',
-    liveUrl:   'https://github.com/Muthu031',
+    liveUrl:   'https://github.com/Muthu031',  // Capstone project — GitHub is the primary link
     badge: 'Open Source',
     accentColor: '#34d399',  // Emerald / green accent colour
     mockType: 'auth',        // Auth login-style mock preview
