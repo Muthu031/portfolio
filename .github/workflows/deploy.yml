@@ -48,10 +48,10 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v4
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm          # cache ~/.npm between runs — faster installs
 
       - name: Install dependencies (clean install — no mutations to lockfile)
@@ -77,17 +77,17 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v4
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Vercel CLI (pinned to stable major)
-        run: npm install --global vercel@latest
+      - name: Install Vercel CLI (pinned)
+        run: npm install --global vercel@48
 
       # Pull project metadata + any environment variables from Vercel
       # VERCEL_TOKEN is injected via secret — never printed or logged
@@ -99,7 +99,7 @@ jobs:
 
       # Build through Vercel's build pipeline (respects vercel.json settings)
       - name: Build for production via Vercel
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --yes --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -108,8 +108,16 @@ jobs:
       - name: Deploy prebuilt artifact to Vercel production
         id: deploy
         run: |
-          DEPLOYMENT_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
-          echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+          LOG_FILE=$(mktemp)
+          vercel deploy --prebuilt --prod --yes --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | tee "$LOG_FILE"
+          DEPLOYMENT_URL=$(grep -Eo 'https://[^[:space:]]+\.vercel\.app' "$LOG_FILE" | tail -n 1)
+
+          if [ -z "$DEPLOYMENT_URL" ]; then
+            echo "Could not extract production deployment URL from Vercel CLI output."
+            exit 1
+          fi
+
+          echo "deployment_url=$DEPLOYMENT_URL" >> "$GITHUB_OUTPUT"
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -125,17 +133,17 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v4
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
       - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+        run: npm install --global vercel@48
 
       - name: Pull Vercel project settings (preview environment)
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
@@ -144,7 +152,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Build preview via Vercel
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --yes --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -152,8 +160,16 @@ jobs:
       - name: Deploy prebuilt artifact to Vercel preview
         id: deploy
         run: |
-          PREVIEW_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
-          echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+          LOG_FILE=$(mktemp)
+          vercel deploy --prebuilt --yes --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | tee "$LOG_FILE"
+          PREVIEW_URL=$(grep -Eo 'https://[^[:space:]]+\.vercel\.app' "$LOG_FILE" | tail -n 1)
+
+          if [ -z "$PREVIEW_URL" ]; then
+            echo "Could not extract preview deployment URL from Vercel CLI output."
+            exit 1
+          fi
+
+          echo "preview_url=$PREVIEW_URL" >> "$GITHUB_OUTPUT"
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
