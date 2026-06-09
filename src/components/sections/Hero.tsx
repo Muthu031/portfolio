@@ -21,112 +21,131 @@ import { Button } from '../ui/Button';
 // ─── ParticleCanvas ──────────────────────────────────────────────────────────
 // An internal component that draws a subtle animated background using the
 // HTML5 Canvas API. It renders:
-//   • A faint cyan grid of horizontal and vertical lines.
+//   • A faint cyan grid of horizontal and vertical lines (desktop only).
 //   • Small floating dots that move slowly around the canvas.
 //   • Thin lines connecting dots that are within 130px of each other.
 //
 // Everything is drawn inside a requestAnimationFrame loop for smooth 60fps animation.
 // The canvas automatically resizes to fill the window on every resize event.
+// 
+// PERFORMANCE: Optimized for mobile with fewer particles and simplified rendering.
 const ParticleCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    let raf = 0; // requestAnimationFrame ID — used to cancel the loop on cleanup
+    // Check for prefers-reduced-motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    // Check if device is mobile (touch-enabled and small screen)
+    const isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
+    
+    let raf = 0; // requestAnimationFrame ID
 
-    // Describes one floating particle
     interface Particle {
-      x: number; y: number;  // Current position
-      vx: number; vy: number; // Velocity (speed and direction)
-      r: number;              // Radius of the dot
-      a: number;              // Opacity / alpha
+      x: number; y: number;
+      vx: number; vy: number;
+      r: number;
+      a: number;
     }
     let pts: Particle[] = [];
 
-    // Resize canvas to fill the screen and regenerate particles
     const resize = () => {
-      canvas.width  = window.innerWidth;
+      canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       spawn();
     };
 
-    // Create an array of particles spread randomly across the canvas.
-    // Fewer particles are created on small screens to keep it performant.
     const spawn = () => {
-      const count = Math.min(
-        80, // Never more than 80 particles
-        Math.floor((canvas.width * canvas.height) / 14000) // ~1 particle per 14,000px²
+      // Aggressively reduce particle count on mobile
+      let count = Math.min(
+        isMobile ? 30 : 80,  // 30 particles on mobile, 80 on desktop
+        Math.floor((canvas.width * canvas.height) / (isMobile ? 30000 : 14000))
       );
+      
+      // Further reduce on very small screens
+      if (window.innerWidth < 480) count = Math.min(count, 15);
+      
       pts = Array.from({ length: count }, () => ({
-        x:  Math.random() * canvas.width,
-        y:  Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.28, // Slow horizontal drift
-        vy: (Math.random() - 0.5) * 0.28, // Slow vertical drift
-        r:  Math.random() * 1.2 + 0.4,    // Radius between 0.4 and 1.6px
-        a:  Math.random() * 0.45 + 0.08,  // Opacity between 0.08 and 0.53
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * (prefersReducedMotion ? 0.05 : 0.28),
+        vy: (Math.random() - 0.5) * (prefersReducedMotion ? 0.05 : 0.28),
+        r: Math.random() * 1.2 + 0.4,
+        a: Math.random() * 0.45 + 0.08,
       }));
     };
 
-    // Main draw function — called every frame via requestAnimationFrame
     const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the previous frame
+      // Use faster clearRect with optimization hints
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // ── Draw the background grid ──
-      ctx.strokeStyle = 'rgba(0,245,255,0.025)'; // Very faint cyan
-      ctx.lineWidth = 1;
-      const gs = 70; // Grid square size in pixels
-      for (let x = 0; x < canvas.width; x += gs) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-      }
-      for (let y = 0; y < canvas.height; y += gs) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      // Only draw grid on desktop (skip on mobile to improve performance)
+      if (!isMobile && !prefersReducedMotion) {
+        ctx.strokeStyle = 'rgba(0,245,255,0.015)'; // Even more subtle
+        ctx.lineWidth = 0.5;
+        const gs = 70;
+        for (let x = 0; x < canvas.width; x += gs) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, canvas.height);
+          ctx.stroke();
+        }
+        for (let y = 0; y < canvas.height; y += gs) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(canvas.width, y);
+          ctx.stroke();
+        }
       }
 
-      // ── Update and draw each particle ──
+      // Update and draw particles
       for (const p of pts) {
-        p.x += p.vx; // Move particle horizontally
-        p.y += p.vy; // Move particle vertically
-        // Bounce off the edges by reversing velocity
-        if (p.x < 0 || p.x > canvas.width)  p.vx *= -1;
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
         if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-        // Draw the particle as a small filled circle
+        
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(0,245,255,${p.a})`;
         ctx.fill();
       }
 
-      // ── Draw connection lines between nearby particles ──
-      for (let i = 0; i < pts.length; i++) {
-        for (let j = i + 1; j < pts.length; j++) {
-          const dx = pts[i].x - pts[j].x;
-          const dy = pts[i].y - pts[j].y;
-          const d  = Math.sqrt(dx * dx + dy * dy); // Distance between two particles
-          if (d < 130) {
-            // Only connect particles within 130px of each other
-            // Line opacity fades as distance increases (further apart = more transparent)
-            ctx.beginPath();
-            ctx.moveTo(pts[i].x, pts[i].y);
-            ctx.lineTo(pts[j].x, pts[j].y);
-            ctx.strokeStyle = `rgba(0,245,255,${0.12 * (1 - d / 130)})`;
-            ctx.lineWidth   = 0.5;
-            ctx.stroke();
+      // Draw connection lines (only on desktop, or reduce on mobile)
+      if (pts.length > 0) {
+        const connectionDistance = isMobile ? 80 : 130; // Shorter connections on mobile
+        const step = isMobile ? 2 : 1; // Check every 2nd particle on mobile
+        
+        for (let i = 0; i < pts.length; i += step) {
+          for (let j = i + 1; j < pts.length; j += step) {
+            const dx = pts[i].x - pts[j].x;
+            const dy = pts[i].y - pts[j].y;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            
+            if (d < connectionDistance) {
+              ctx.beginPath();
+              ctx.moveTo(pts[i].x, pts[i].y);
+              ctx.lineTo(pts[j].x, pts[j].y);
+              ctx.strokeStyle = `rgba(0,245,255,${0.08 * (1 - d / connectionDistance)})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
           }
         }
       }
 
-      raf = requestAnimationFrame(draw); // Schedule the next frame
+      raf = requestAnimationFrame(draw);
     };
 
-    resize(); // Set initial canvas size and spawn particles
-    draw();   // Start the animation loop
-    window.addEventListener('resize', resize); // Re-spawn on window resize
+    resize();
+    draw();
+    window.addEventListener('resize', resize);
 
-    // Cleanup: stop the animation and remove the listener when component unmounts
     return () => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(raf);
@@ -137,7 +156,8 @@ const ParticleCanvas: React.FC = () => {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 w-full h-full"
-      aria-hidden="true" // Screen readers don't need to know about the background canvas
+      style={{ willChange: 'contents' }}
+      aria-hidden="true"
     />
   );
 };
@@ -204,7 +224,7 @@ export const Hero: React.FC = () => (
       <motion.h1
         variants={fadeUp}
         className="font-mono font-bold leading-none mb-4"
-        style={{ fontSize: 'clamp(3rem, 10vw, 7.5rem)' }} // Fluid font size: 3rem → 7.5rem
+        style={{ fontSize: 'clamp(2rem, 8vw, 7.5rem)' }} // Fluid font size: 2rem → 7.5rem (better for mobile)
       >
         <span
           className="glitch-text text-cream"
@@ -241,13 +261,14 @@ export const Hero: React.FC = () => (
       {/* ── CTA Buttons: "View My Work" and "Download Resume" ── */}
       <motion.div
         variants={fadeUp}
-        className="flex flex-wrap items-center justify-center gap-4 mb-12"
+        className="flex flex-col xs:flex-row flex-wrap items-center justify-center gap-3 xs:gap-4 mb-12 w-full xs:w-auto"
       >
         <Button
           href="#projects"
           variant="primary"
-          size="lg"
+          size="md"
           icon={<ArrowRight size={16} />}
+          className="w-full xs:w-auto"
           onClick={() => {
             // Scroll to the projects section when clicked
             document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
@@ -258,9 +279,10 @@ export const Hero: React.FC = () => (
         <Button
           href="/Muthukumaran S - Nodejs Developer.pdf"
           variant="secondary"
-          size="lg"
+          size="md"
           download                             // Triggers file download instead of navigating
           icon={<Download size={16} />}
+          className="w-full xs:w-auto"
           aria-label="Download Resume PDF"
         >
           Download Resume

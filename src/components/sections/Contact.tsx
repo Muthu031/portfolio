@@ -57,11 +57,11 @@ interface InputProps {
 const FormField: React.FC<InputProps> = ({ id, label, value, error, type = 'text', placeholder, onChange, rows }) => {
   const hasError = Boolean(error);
   const baseInput =
-    'w-full bg-void border px-4 py-3 font-mono text-sm text-cream placeholder-muted/50 outline-none transition-all duration-200 focus:border-electric/60 focus:bg-panel ' +
+    'w-full bg-void border px-3 xs:px-4 py-2 xs:py-3 font-mono text-xs xs:text-sm text-cream placeholder-muted/50 outline-none transition-all duration-200 focus:border-electric/60 focus:bg-panel ' +
     (hasError ? 'border-rose-500/50' : 'border-white/10 hover:border-white/20');
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1">
       <label htmlFor={id} className="font-mono text-xs text-muted tracking-widest uppercase">
         {label}
       </label>
@@ -144,51 +144,51 @@ export const Contact: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="py-28 bg-panel/40" aria-label="Contact section">
-      <div className="max-w-6xl mx-auto px-6">
+    <section id="contact" className="py-20 xs:py-28 bg-panel/40" aria-label="Contact section">
+      <div className="max-w-6xl mx-auto px-4 xs:px-6">
         {/* Header */}
         <motion.div
-          className="flex items-center gap-4 mb-20"
+          className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 mb-16 xs:mb-20"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <span className="font-mono text-electric text-sm tracking-widest">// 06</span>
-          <h2 className="font-mono text-3xl md:text-4xl font-bold text-cream">Let's Build Something</h2>
-          <div className="flex-1 h-px bg-gradient-to-r from-electric/30 to-transparent" aria-hidden="true" />
+          <span className="font-mono text-electric text-xs xs:text-sm tracking-widest">// 06</span>
+          <h2 className="font-mono text-2xl xs:text-3xl md:text-4xl font-bold text-cream">Let's Build Something</h2>
+          <div className="hidden xs:flex flex-1 h-px bg-gradient-to-r from-electric/30 to-transparent" aria-hidden="true" />
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-start">
+        <div className="grid lg:grid-cols-2 gap-8 xs:gap-12 lg:gap-24 items-start">
           {/* Left: CTA copy */}
           <motion.div
-            className="flex flex-col gap-6"
+            className="flex flex-col gap-4 xs:gap-6"
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
             <div>
-              <Badge variant="available" className="mb-4">Open to Opportunities</Badge>
-              <h3 className="font-mono text-2xl font-bold text-cream mb-4 leading-snug">
+              <Badge variant="available" className="mb-3 xs:mb-4">Open to Opportunities</Badge>
+              <h3 className="font-mono text-xl xs:text-2xl font-bold text-cream mb-3 xs:mb-4 leading-snug">
                 Have an idea, a role,<br />or a problem worth solving?
               </h3>
-              <p className="text-muted leading-relaxed">
+              <p className="text-muted text-sm xs:text-base leading-relaxed">
                 I'm currently open to senior full-stack roles and select freelance projects. Whether
                 you need someone to architect a system from scratch or level up an existing codebase —
                 let's talk.
               </p>
             </div>
 
-            <div className="flex flex-col gap-4 pt-2">
+            <div className="flex flex-col gap-3 xs:gap-4 pt-1 xs:pt-2">
               <motion.a
                 href="mailto:muthukumaran6967@gmail.com"
                 className="inline-flex items-center gap-3 text-cream hover:text-electric transition-colors duration-200 group"
                 whileHover={{ x: 4 }}
                 aria-label="Send email to muthukumaran6967@gmail.com"
               >
-                <Mail size={16} className="text-electric" aria-hidden="true" />
-                <span className="font-mono text-sm">muthukumaran6967@gmail.com</span>
+                <Mail size={16} className="text-electric flex-shrink-0" aria-hidden="true" />
+                <span className="font-mono text-xs xs:text-sm break-all">muthukumaran6967@gmail.com</span>
               </motion.a>
 
               <motion.a
@@ -199,18 +199,18 @@ export const Contact: React.FC = () => {
                 whileHover={{ x: 4 }}
                 aria-label="View LinkedIn profile"
               >
-                <Linkedin size={16} className="text-electric" aria-hidden="true" />
-                <span className="font-mono text-sm">linkedin.com/in/muthukumaran-s</span>
+                <Linkedin size={16} className="text-electric flex-shrink-0" aria-hidden="true" />
+                <span className="font-mono text-xs xs:text-sm break-all">linkedin.com/in/muthukumaran-s</span>
               </motion.a>
 
               <div className="inline-flex items-center gap-3 text-muted">
-                <Clock size={16} className="text-electric/60" aria-hidden="true" />
+                <Clock size={16} className="text-electric/60 flex-shrink-0" aria-hidden="true" />
                 <span className="font-mono text-xs">Usually replies within 24 hours</span>
               </div>
             </div>
 
             {/* Code block aesthetic */}
-            <div className="mt-4 bg-card border border-white/[0.06] p-4 font-mono text-xs">
+            <div className="mt-2 xs:mt-4 bg-card border border-white/[0.06] p-3 xs:p-4 font-mono text-xs overflow-auto">
               <div className="text-muted/50 mb-1">// current status</div>
               <div>
                 <span className="text-electric">const</span>{' '}

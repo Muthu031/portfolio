@@ -38,7 +38,7 @@ const SkillCard: React.FC<{ skill: Skill; color: string; index: number }> = ({
 
   return (
     <motion.div
-      className="relative bg-card border border-white/[0.06] p-4 group overflow-hidden"
+      className="relative bg-card border border-white/[0.06] p-3 xs:p-4 group overflow-hidden"
       // Card slides up from below when it first enters the viewport
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -63,15 +63,15 @@ const SkillCard: React.FC<{ skill: Skill; color: string; index: number }> = ({
       />
 
       {/* Row: emoji icon + skill name */}
-      <div className="flex items-center gap-3 mb-3">
-        <span className="text-2xl" role="img" aria-label={skill.name}>{skill.icon}</span>
-        <span className="font-mono text-sm font-bold text-cream group-hover:text-white transition-colors duration-200">
+      <div className="flex items-center gap-2 xs:gap-3 mb-2 xs:mb-3">
+        <span className="text-xl xs:text-2xl flex-shrink-0" role="img" aria-label={skill.name}>{skill.icon}</span>
+        <span className="font-mono text-xs xs:text-sm font-bold text-cream group-hover:text-white transition-colors duration-200">
           {skill.name}
         </span>
       </div>
 
       {/* Proficiency badge — Expert / Advanced / Proficient */}
-      <div className="mb-3">
+      <div className="mb-2 xs:mb-3">
         <Badge variant={proficiencyVariant[skill.proficiency]}>
           {skill.proficiency}
         </Badge>
@@ -118,9 +118,9 @@ const CategoryBlock: React.FC<{ catIndex: number }> = ({ catIndex }) => {
       transition={{ delay: catIndex * 0.1, duration: 0.6 }}
     >
       {/* Category heading row: icon + title + gradient divider line */}
-      <div className="flex items-center gap-3 mb-5">
-        <span className="text-xl" aria-hidden="true">{cat.icon}</span>
-        <h3 className="font-mono font-bold text-cream">{cat.title}</h3>
+      <div className="flex items-center gap-2 xs:gap-3 mb-4 xs:mb-5">
+        <span className="text-lg xs:text-xl flex-shrink-0" aria-hidden="true">{cat.icon}</span>
+        <h3 className="font-mono font-bold text-sm xs:text-base text-cream">{cat.title}</h3>
         {/* Line that starts with the category's colour and fades to transparent */}
         <div
           className="flex-1 h-px"
@@ -130,7 +130,7 @@ const CategoryBlock: React.FC<{ catIndex: number }> = ({ catIndex }) => {
       </div>
 
       {/* Responsive grid of SkillCards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 xs:gap-3">
         {cat.skills.map((skill, i) => (
           <SkillCard key={skill.name} skill={skill} color={cat.color} index={i} />
         ))}
@@ -141,25 +141,25 @@ const CategoryBlock: React.FC<{ catIndex: number }> = ({ catIndex }) => {
 
 // ─── Skills Section Component ─────────────────────────────────────────────────
 export const Skills: React.FC = () => (
-  <section id="skills" className="py-28 bg-panel/40" aria-label="Skills section">
-    <div className="max-w-7xl mx-auto px-6">
+  <section id="skills" className="py-20 xs:py-28 bg-panel/40" aria-label="Skills section">
+    <div className="max-w-7xl mx-auto px-4 xs:px-6">
 
       {/* ── Section heading: "// 02  My Arsenal" ── */}
       <motion.div
-        className="flex items-center gap-4 mb-20"
+        className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 mb-16 xs:mb-20"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <span className="font-mono text-electric text-sm tracking-widest">// 02</span>
-        <h2 className="font-mono text-3xl md:text-4xl font-bold text-cream">Technical Skills</h2>
-        <div className="flex-1 h-px bg-gradient-to-r from-electric/30 to-transparent" aria-hidden="true" />
+        <span className="font-mono text-electric text-xs xs:text-sm tracking-widest">// 02</span>
+        <h2 className="font-mono text-2xl xs:text-3xl md:text-4xl font-bold text-cream">Technical Skills</h2>
+        <div className="hidden xs:flex flex-1 h-px bg-gradient-to-r from-electric/30 to-transparent" aria-hidden="true" />
       </motion.div>
 
       {/* ── Intro paragraph ── */}
       <motion.p
-        className="text-muted max-w-2xl mb-16 leading-relaxed"
+        className="text-muted text-sm xs:text-base max-w-2xl mb-12 xs:mb-16 leading-relaxed"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -170,7 +170,7 @@ export const Skills: React.FC = () => (
       </motion.p>
 
       {/* ── One CategoryBlock per skill category ── */}
-      <div className="flex flex-col gap-14">
+      <div className="flex flex-col gap-10 xs:gap-14">
         {skillCategories.map((_, i) => (
           <CategoryBlock key={i} catIndex={i} />
         ))}

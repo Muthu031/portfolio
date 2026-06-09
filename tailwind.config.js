@@ -1,7 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  // Enable JIT mode for faster builds and smaller output
   theme: {
+    // Enhanced breakpoints for better mobile responsiveness
+    screens: {
+      'xs': '320px',   // Extra small devices
+      'sm': '640px',   // Small devices
+      'md': '768px',   // Medium tablets
+      'lg': '1024px',  // Large tablets and small laptops
+      'xl': '1280px',  // Desktop
+      '2xl': '1536px', // Large desktop
+    },
     extend: {
       colors: {
         electric: '#00f5ff',
@@ -30,6 +40,7 @@ export default {
         mono: ['"Space Mono"', 'monospace'],
         sans: ['Sora', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
+      // Optimize animations for better performance
       animation: {
         'glitch': 'glitch 8s infinite',
         'cursor-blink': 'cursor-blink 1s step-end infinite',
@@ -64,7 +75,29 @@ export default {
           '100%': { backgroundPosition: '200% 0' },
         },
       },
+      // Better spacing for mobile and desktop
+      spacing: {
+        'safe': 'max(1rem, env(safe-area-inset-bottom))',
+      },
+      // Optimize transitions
+      transitionDuration: {
+        '0': '0ms',
+        '50': '50ms',
+        '100': '100ms',
+        '150': '150ms',
+        '200': '200ms',
+        '300': '300ms',
+        '500': '500ms',
+        '700': '700ms',
+        '1000': '1000ms',
+      },
     },
   },
+  // Use JIT compiler for optimal performance
+  mode: 'jit',
   plugins: [],
+  // Purge unused styles more aggressively
+  safelist: [
+    // Add any dynamic classes here if needed
+  ],
 }

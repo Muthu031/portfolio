@@ -78,24 +78,23 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
-      {/* ── Fixed top header bar ── */}
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? 'backdrop-blur-xl bg-void/80 border-b border-white/[0.06] py-3' // Frosted glass on scroll
-            : 'bg-transparent py-5'                                             // Transparent at top
+            ? 'backdrop-blur-xl bg-void/80 border-b border-white/[0.06] py-2 xs:py-3' // Frosted glass on scroll
+            : 'bg-transparent py-3 xs:py-5'                                             // Transparent at top
         }`}
         role="banner" // Accessibility landmark for the page header
       >
         <nav
-          className="max-w-7xl mx-auto px-6 flex items-center justify-between"
+          className="max-w-7xl mx-auto px-4 xs:px-6 flex items-center justify-between"
           aria-label="Main navigation"
         >
-          {/* ── Logo: <MS/> \u2014 clicking it scrolls back to the top ── */}
+          {/* ── Logo: <MS/> — clicking it scrolls back to the top ── */}
           <motion.a
             href="#hero"
             onClick={(e) => { e.preventDefault(); handleNavClick('#hero'); }}
-            className="font-mono text-lg font-bold tracking-widest"
+            className="font-mono text-sm xs:text-lg font-bold tracking-widest flex-shrink-0"
             whileHover={{ scale: 1.05 }}
             aria-label="Go to top"
           >
@@ -105,7 +104,7 @@ export const Navbar: React.FC = () => {
           </motion.a>
 
           {/* ── Desktop navigation links (hidden on mobile) ── */}
-          <ul className="hidden md:flex items-center gap-8" role="list">
+          <ul className="hidden md:flex items-center gap-6 lg:gap-8" role="list">
             {NAV_LINKS.map(({ label, href }) => {
               const id = href.replace('#', '');
               const isActive = activeSection === id; // Is this the current section?
@@ -136,7 +135,7 @@ export const Navbar: React.FC = () => {
           </ul>
 
           {/* ── Desktop CTA + Mobile hamburger button ── */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 xs:gap-4 flex-shrink-0">
             {/* "Hire Me" button — only visible on desktop (md and above) */}
             <motion.a
               href="#contact"
@@ -150,7 +149,7 @@ export const Navbar: React.FC = () => {
 
             {/* Hamburger / close button — only visible on mobile (hidden on md and above) */}
             <button
-              className="md:hidden flex items-center justify-center w-9 h-9 text-cream"
+              className="md:hidden flex items-center justify-center w-9 h-9 min-h-[44px] min-w-[44px] text-cream -m-[7px]"
               onClick={() => setMenuOpen((o) => !o)} // Toggle menu open/closed
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={menuOpen} // Tells screen readers whether the menu is open
@@ -189,9 +188,9 @@ export const Navbar: React.FC = () => {
               aria-hidden="true"
             />
 
-            <div className="relative flex flex-col h-full px-8 pt-24 pb-12">
+            <div className="relative flex flex-col h-full px-4 xs:px-8 pt-20 xs:pt-24 pb-8 xs:pb-12 safe">
               {/* ── Mobile nav links ── */}
-              <ul className="flex flex-col gap-6" role="list">
+              <ul className="flex flex-col gap-4 xs:gap-6" role="list">
                 {NAV_LINKS.map(({ label, href }, i) => (
                   // Each link animates in from the right with a staggered delay
                   <motion.li
@@ -206,10 +205,10 @@ export const Navbar: React.FC = () => {
                         e.preventDefault();
                         handleNavClick(href); // Closes menu and scrolls to section
                       }}
-                      className="font-mono text-3xl font-bold text-cream hover:text-electric transition-colors duration-200"
+                      className="font-mono text-2xl xs:text-3xl font-bold text-cream hover:text-electric transition-colors duration-200"
                     >
                       {/* Dim numbered prefix, e.g. "01." before "Home" */}
-                      <span className="text-electric/40 text-lg mr-2">
+                      <span className="text-electric/40 text-lg xs:text-lg mr-2">
                         0{i + 1}.
                       </span>
                       {label}
@@ -220,7 +219,7 @@ export const Navbar: React.FC = () => {
 
               {/* Email address shown at the bottom of the mobile menu */}
               <div className="mt-auto">
-                <p className="font-mono text-xs text-muted">
+                <p className="font-mono text-xs xs:text-sm text-muted break-all">
                   muthukumaran6967@gmail.com
                 </p>
               </div>

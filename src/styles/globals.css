@@ -247,42 +247,37 @@ img[loading='lazy'].loaded {
   opacity: 1;
 }
 
-/* ─── Focus Ring ─────────────────────────────────────────── */
-:focus-visible {
-  outline: 2px solid #00f5ff;
-  outline-offset: 3px;
-  border-radius: 2px;
+/* ─── Reduced Motion Support (Accessibility) ────────────── */
+/* For users who prefer reduced motion (prefers-reduced-motion), disable all
+   animations to prevent motion sickness or discomfort. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-/* ─── Shimmer Animation Utility ──────────────────────────── */
-.shimmer-text {
-  background: linear-gradient(
-    90deg,
-    #e8e8f0 0%,
-    #00f5ff 40%,
-    #e8e8f0 60%,
-    #e8e8f0 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer-anim 4s linear infinite;
+/* ─── Performance Optimizations ──────────────────────────── */
+/* GPU acceleration via will-change and transform hints */
+.glow-electric,
+.glow-golden,
+.shimmer-text,
+.glitch-text,
+button,
+a {
+  will-change: auto;
+  transform: translateZ(0); /* GPU acceleration */
 }
 
-@keyframes shimmer-anim {
-  0%   { background-position: 200% center; }
-  100% { background-position: -200% center; }
-}
-
-/* ─── Timeline Draw Animation ────────────────────────────── */
-.timeline-line-enter {
-  animation: draw-line 1.2s ease forwards;
-}
-
-@keyframes draw-line {
-  from { height: 0%; }
-  to   { height: 100%; }
+button:hover,
+a:hover,
+.glow-electric:hover,
+.glow-golden:hover {
+  will-change: box-shadow, transform;
 }
 
 /* ─── Responsive Image Lazy Load Fade ───────────────────── */
@@ -292,4 +287,49 @@ img[loading='lazy'] {
 }
 img[loading='lazy'].loaded {
   opacity: 1;
+}
+
+/* ─── Mobile Optimizations ───────────────────────────────── */
+@media (max-width: 768px) {
+  /* Reduce animation complexity on mobile */
+  .glitch-text::before,
+  .glitch-text::after {
+    display: none;
+  }
+
+  /* Disable custom cursor on touch devices */
+  @media (pointer: coarse) {
+    * {
+      cursor: auto !important;
+    }
+  }
+  
+  /* Reduce scroll bar width on mobile */
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
+
+  /* Optimize body padding for mobile */
+  body {
+    padding-right: 0;
+    overflow-x: hidden;
+  }
+
+  /* Larger touch targets */
+  button,
+  a[role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ─── Prevent FOUT (Flash of Unstyled Text) ─────────────── */
+@font-face {
+  font-family: 'Sora';
+  font-display: swap; /* Show fallback font while loading */
+}
+
+@font-face {
+  font-family: 'Space Mono';
+  font-display: swap;
 }

@@ -104,29 +104,29 @@ export const About: React.FC = () => {
   const { ref: statsRef, inView: statsInView } = useInView({ triggerOnce: true, threshold: 0.3 });
 
   return (
-    <section id="about" className="py-28 bg-void" aria-label="About section">
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="about" className="py-20 xs:py-28 bg-void" aria-label="About section">
+      <div className="max-w-7xl mx-auto px-4 xs:px-6">
 
         {/* ── Section heading: "// 01  About Me" ── */}
         <motion.div
-          className="flex items-center gap-4 mb-20"
+          className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 mb-16 xs:mb-20"
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <span className="font-mono text-electric text-sm tracking-widest">// 01</span>
-          <h2 className="font-mono text-3xl md:text-4xl font-bold text-cream">About Me</h2>
+          <span className="font-mono text-electric text-xs xs:text-sm tracking-widest">// 01</span>
+          <h2 className="font-mono text-2xl xs:text-3xl md:text-4xl font-bold text-cream">About Me</h2>
           {/* Decorative gradient line to the right of the heading */}
-          <div className="flex-1 h-px bg-gradient-to-r from-electric/30 to-transparent" aria-hidden="true" />
+          <div className="hidden xs:flex flex-1 h-px bg-gradient-to-r from-electric/30 to-transparent" aria-hidden="true" />
         </motion.div>
 
         {/* ── Two-column split: photo (left) + bio (right) ── */}
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-start mb-24">
+        <div className="grid lg:grid-cols-2 gap-8 xs:gap-12 lg:gap-24 items-start mb-20 xs:mb-24">
 
           {/* Left column: profile photo in a hexagonal clip-path frame */}
           <motion.div
-            className="flex justify-center lg:justify-end"
+            className="flex justify-center"
             variants={fadeUp}
             initial="hidden"
             whileInView="visible"
@@ -135,7 +135,7 @@ export const About: React.FC = () => {
             <div className="relative">
               {/* The hexagonal shape is achieved with CSS clip-path */}
               <div
-                className="relative w-72 h-72 md:w-80 md:h-80"
+                className="relative w-56 h-56 xs:w-64 xs:h-64 sm:w-72 sm:h-72 md:w-80 md:h-80"
                 style={{
                   clipPath: 'polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%)',
                 }}

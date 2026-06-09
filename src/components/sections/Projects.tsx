@@ -139,7 +139,7 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, i
     >
       {/* ── Mock preview panel ── */}
       <div
-        className={`relative h-56 lg:h-auto overflow-hidden bg-card ${isEven ? 'lg:order-first' : 'lg:order-last'}`}
+        className={`relative h-40 xs:h-48 sm:h-56 lg:h-auto overflow-hidden bg-card ${isEven ? 'lg:order-first' : 'lg:order-last'}`}
       >
         {/* Gradient overlay fades the preview into the content panel beside it */}
         <div
@@ -163,10 +163,10 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, i
 
       {/* ── Project info panel ── */}
       <div
-        className={`flex flex-col justify-center p-8 lg:p-10 bg-card group-hover:bg-panel/60 transition-colors duration-300 ${isEven ? 'lg:order-last' : 'lg:order-first'}`}
+        className={`flex flex-col justify-center p-4 xs:p-6 sm:p-8 lg:p-10 bg-card group-hover:bg-panel/60 transition-colors duration-300 ${isEven ? 'lg:order-last' : 'lg:order-first'}`}
       >
         {/* Badge: "Featured" or "Open Source" */}
-        <div className="mb-4">
+        <div className="mb-3 xs:mb-4">
           <Badge variant={project.badge === 'Featured' ? 'featured' : 'opensource'}>
             {project.badge}
           </Badge>
@@ -174,23 +174,23 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, i
 
         {/* Project title in the accent colour */}
         <h3
-          className="font-mono text-2xl font-bold mb-1 transition-colors duration-200"
+          className="font-mono text-xl xs:text-2xl font-bold mb-1 transition-colors duration-200"
           style={{ color: project.accentColor }}
         >
           {project.title}
         </h3>
-        <p className="font-sans text-sm text-muted mb-3 font-medium">{project.tagline}</p>
-        <p className="text-muted/80 text-sm leading-relaxed mb-6">{project.description}</p>
+        <p className="font-sans text-xs xs:text-sm text-muted mb-2 xs:mb-3 font-medium">{project.tagline}</p>
+        <p className="text-muted/80 text-xs xs:text-sm leading-relaxed mb-4 xs:mb-6">{project.description}</p>
 
         {/* Tech stack chips */}
-        <div className="flex flex-wrap gap-2 mb-7" aria-label="Technologies used">
+        <div className="flex flex-wrap gap-2 mb-5 xs:mb-7" aria-label="Technologies used">
           {project.techStack.map((chip) => (
             <Tag key={chip.name} category={chip.category}>{chip.name}</Tag>
           ))}
         </div>
 
         {/* Action buttons: Source (GitHub) + Live Demo / Private */}
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-2 xs:gap-3 flex-wrap">
           <Button
             href={project.githubUrl}
             target="_blank"
@@ -219,7 +219,7 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, i
               className="font-mono text-xs px-3 py-1.5 border border-white/10 text-muted rounded-sm"
               title="Enterprise project — source under NDA"
             >
-              🔒 Enterprise / Private
+              🔒 Private
             </span>
           )}
         </div>
@@ -230,25 +230,25 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, i
 
 // ─── Projects Section Component ───────────────────────────────────────────────
 export const Projects: React.FC = () => (
-  <section id="projects" className="py-28 bg-void" aria-label="Projects section">
-    <div className="max-w-7xl mx-auto px-6">
+  <section id="projects" className="py-20 xs:py-28 bg-void" aria-label="Projects section">
+    <div className="max-w-7xl mx-auto px-4 xs:px-6">
 
       {/* ── Section heading: "// 03  Things I've Built" ── */}
       <motion.div
-        className="flex items-center gap-4 mb-6"
+        className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 mb-4 xs:mb-6"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <span className="font-mono text-electric text-sm tracking-widest">// 03</span>
-        <h2 className="font-mono text-3xl md:text-4xl font-bold text-cream">Things I've Built</h2>
-        <div className="flex-1 h-px bg-gradient-to-r from-electric/30 to-transparent" aria-hidden="true" />
+        <span className="font-mono text-electric text-xs xs:text-sm tracking-widest">// 03</span>
+        <h2 className="font-mono text-2xl xs:text-3xl md:text-4xl font-bold text-cream">Things I've Built</h2>
+        <div className="hidden xs:flex flex-1 h-px bg-gradient-to-r from-electric/30 to-transparent" aria-hidden="true" />
       </motion.div>
 
       {/* ── Intro sentence ── */}
       <motion.p
-        className="text-muted max-w-xl mb-16 leading-relaxed"
+        className="text-muted text-sm xs:text-base max-w-xl mb-12 xs:mb-16 leading-relaxed"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -258,7 +258,7 @@ export const Projects: React.FC = () => (
       </motion.p>
 
       {/* ── Project card list ── */}
-      <div className="flex flex-col gap-6 mb-16">
+      <div className="flex flex-col gap-4 xs:gap-6 mb-12 xs:mb-16">
         {projects.map((project, i) => (
           <ProjectCard key={project.id} project={project} index={i} />
         ))}
@@ -276,7 +276,7 @@ export const Projects: React.FC = () => (
           href="https://github.com/Muthu031"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 font-mono text-sm text-muted hover:text-electric transition-colors duration-200 group"
+          className="inline-flex items-center gap-2 font-mono text-xs xs:text-sm text-muted hover:text-electric transition-colors duration-200 group"
           whileHover={{ x: 4 }} // Slides right on hover
           aria-label="View more projects on GitHub"
         >
