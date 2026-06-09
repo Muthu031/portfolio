@@ -15,7 +15,7 @@ import { Stat, TimelineMilestone } from '../../types';
 
 // Four highlight numbers shown in the stats grid
 const STATS: Stat[] = [
-  { numericValue: 3,  prefix: '', suffix: '+', label: 'Years Experience' },
+  { numericValue: 2,  prefix: '', suffix: '+', label: 'Years Experience' },
   { numericValue: 5,  prefix: '', suffix: '+', label: 'Products Shipped' },
   { numericValue: 8,  prefix: '', suffix: '+', label: 'Tech Stacks' },
   { numericValue: 0,  prefix: '∞', suffix: '', label: 'Coffee Consumed' }, // numericValue 0 means "just show the prefix"
@@ -23,10 +23,24 @@ const STATS: Stat[] = [
 
 // Four career turning points shown in the timeline
 const MILESTONES: TimelineMilestone[] = [
-  { year: '2019', title: 'B.Tech Journey Begins',     description: 'Enrolled in Information Technology at Jayaraj Annapackiam CSI College. Wrote my first lines of JavaScript and immediately knew this was the path.', emoji: '🚀' },
-  { year: '2022', title: 'Capstone Project Lead',     description: 'Built AttendTrack — a full-stack attendance automation system in Node.js, React, and PostgreSQL for my final year project. Received the top evaluation in the department.', emoji: '🏆' },
-  { year: '2023', title: 'First Professional Role',  description: 'Joined Skandvel Webtech as a Full-Stack Developer. Shipped production code for UK enterprise clients from week one — Node.js, TypeScript, PostgreSQL at scale.', emoji: '⚡' },
-  { year: '2024', title: 'International Client Work', description: 'Led development on ConnectMe — a complex multi-tenant service platform for UK enterprise. Designed workflows, optimised DB performance, and shipped zero critical incidents.', emoji: '🌐' },
+  {
+    "year": "2019 - 2023",
+    "title": "B.Tech Journey Begins",
+    "description": "completed  my Information Technology UG at Jayaraj Annapackiam CSI College. Wrote my first lines of JavaScript and immediately knew this was the path.",
+    "emoji": "🚀"
+  },
+  {
+    "year": "2024 - 2025",
+    "title": "First Professional Role",
+    "description": "Joined Skandvel Webtech as a Full-Stack Developer. Shipped production code for UK enterprise clients from week one — Node.js, TypeScript, PostgreSQL at scale.",
+    "emoji": "⚡"
+  },
+  {
+    "year": "2025 - 2026",
+    "title": "International Client Work",
+    "description": "software development on ConnectMe — a complex multi-tenant service platform for UK enterprise. Designed workflows, optimised DB performance, and shipped zero critical incidents.",
+    "emoji": "🌐"
+  }
 ];
 
 // Short "personality chip" labels shown under the bio text
@@ -127,10 +141,11 @@ export const About: React.FC = () => {
                 }}
               >
                 <img
-                  src="/profile.jpg"
+                  src="/profile.jpeg"
                   alt="Muthukumaran S — Full-Stack Developer"
-                  className="w-full h-full object-cover object-top"
+                  className="loaded w-full h-full object-cover object-[center_30%]"
                   loading="lazy"
+                  onLoad={(e) => e.currentTarget.classList.add('loaded')}
                 />
               </div>
 
@@ -160,11 +175,11 @@ export const About: React.FC = () => {
 
               {/* Floating badge that gently bobs up and down */}
               <motion.div
-                className="absolute -bottom-4 -right-4 bg-card border border-electric/20 px-4 py-2"
+                className="absolute -bottom-18 left-1/2 -translate-x-1/2 bg-card border border-electric/24 px-4 py-2"
                 animate={{ y: [0, -6, 0] }}
                 transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
               >
-                <span className="font-mono text-xs text-electric">{'<2yr />'} Full-Stack</span>
+                <span className="font-mono text-xs text-electric">{'<2+yr />'} Full-Stack</span>
               </motion.div>
             </div>
           </motion.div>

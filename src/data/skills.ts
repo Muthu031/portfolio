@@ -74,7 +74,8 @@ export const skillCategories: SkillCategory[] = [
     color: '#fb7185', // Rose / pink for tooling skills
     skills: [
       { name: 'Git',             icon: '📦', proficiency: 'Expert',     level: 95 },
-      { name: 'AWS',             icon: '☁️', proficiency: 'Proficient', level: 68 }, // Growing cloud experience
+      { name: 'AWS',             icon: '☁️', proficiency: 'Proficient', level: 68 },
+      { name: 'Vercel',          icon: '▲',  proficiency: 'Advanced',   level: 82 },
       { name: 'Postman',         icon: '📬', proficiency: 'Expert',     level: 90 },
       { name: 'Browser DevTools',icon: '🛠️', proficiency: 'Expert',     level: 90 },
       { name: 'Debugging',       icon: '🐛', proficiency: 'Expert',     level: 92 },

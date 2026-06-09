@@ -147,8 +147,8 @@ const ParticleCanvas: React.FC = () => {
 const SOCIALS = [
   { icon: <Github size={18} />,   href: 'https://github.com/Muthu031',                         label: 'GitHub' },
   { icon: <Linkedin size={18} />, href: 'https://www.linkedin.com/in/muthukumaran-s/',         label: 'LinkedIn' },
-  { icon: <Code2 size={18} />,    href: 'https://leetcode.com/u/Muthukumaran_S/',              label: 'LeetCode' },
-  { icon: <Twitter size={18} />,  href: 'https://twitter.com/muthukumaran_s',                  label: 'Twitter / X' },
+  { icon: <Code2 size={18} />,    href: 'https://leetcode.com/u/iLhxjQqAwz/',              label: 'LeetCode' },
+  // { icon: <Twitter size={18} />,  href: 'https://twitter.com/muthukumaran_s',                  label: 'Twitter / X' },
   { icon: <Mail size={18} />,     href: 'mailto:muthukumaran6967@gmail.com',                   label: 'Email' },
 ];
 
@@ -208,9 +208,9 @@ export const Hero: React.FC = () => (
       >
         <span
           className="glitch-text text-cream"
-          data-text="Muthukumaran S"
+          data-text="Muthukumaran"
         >
-          Muthukumaran S
+          Muthukumaran
         </span>
       </motion.h1>
 
@@ -256,7 +256,7 @@ export const Hero: React.FC = () => (
           View My Work
         </Button>
         <Button
-          href="/resume.pdf"
+          href="/Muthukumaran S - Nodejs Developer.pdf"
           variant="secondary"
           size="lg"
           download                             // Triggers file download instead of navigating
