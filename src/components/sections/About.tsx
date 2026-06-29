@@ -141,7 +141,7 @@ export const About: React.FC = () => {
                 }}
               >
                 <img
-                  src="/profile.jpeg"
+                  src={`${import.meta.env.BASE_URL}profile.jpeg`}
                   alt="Muthukumaran S — Full-Stack Developer"
                   className="loaded w-full h-full object-cover object-[center_30%]"
                   loading="lazy"

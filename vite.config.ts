@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
+  base: '/portfolio/',
   plugins: [react()],
   build: {
     // Never expose source maps in production — they reveal your full source code
@@ -13,7 +14,8 @@ export default defineConfig({
       output: {
         // Code splitting for better caching
         manualChunks: {
-          vendor: ['react', 'react-dom', 'framer-motion', 'react-router-dom'],
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          motion: ['framer-motion'],
           icons: ['lucide-react'],
         },
       },

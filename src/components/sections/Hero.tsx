@@ -277,7 +277,7 @@ export const Hero: React.FC = () => (
           View My Work
         </Button>
         <Button
-          href="/Muthukumaran S - Nodejs Developer.pdf"
+          href={`${import.meta.env.BASE_URL}Muthukumaran S - Nodejs Developer.pdf`}
           variant="secondary"
           size="md"
           download                             // Triggers file download instead of navigating

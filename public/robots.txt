@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Disallow private/internal paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /*.json$
+
+# Crawl delay
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://muthu031.github.io/portfolio/sitemap.xml

@@ -93,10 +93,7 @@ export default {
       },
     },
   },
-  // Use JIT compiler for optimal performance
-  mode: 'jit',
   plugins: [],
-  // Purge unused styles more aggressively
   safelist: [
     // Add any dynamic classes here if needed
   ],

@@ -11,9 +11,9 @@
 //   • When the mobile menu is open, body scrolling is locked so only the menu scrolls.
 //   • Clicking any link smoothly scrolls to that section and closes the mobile menu.
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react'; // Hamburger and close icons
+import { Menu, X } from 'lucide-react';
 import { NavLink } from '../../types';
 
 // All navigation links \u2014 label shown in the menu, href is the section anchor
@@ -32,30 +32,29 @@ const NAV_LINKS: NavLink[] = [
 const SECTION_IDS = NAV_LINKS.map((l) => l.href.replace('#', ''));
 
 export const Navbar: React.FC = () => {
-  const [scrolled, setScrolled]    = useState(false);   // True when scrolled past 60px
-  const [menuOpen, setMenuOpen]    = useState(false);   // True when mobile menu is open
-  const [activeSection, setActive] = useState('hero');  // ID of the section in the viewport
+  const [scrolled, setScrolled]    = useState(false);
+  const [menuOpen, setMenuOpen]    = useState(false);
+  const [activeSection, setActive] = useState('hero');
+  const menuRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   // ── Effect 1: Add frosted-glass background when the user scrolls down ──
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60); // Trigger at 60px
+    const onScroll = () => setScrolled(window.scrollY > 60);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   // ── Effect 2: Track which section is currently in the centre of the viewport ──
-  // rootMargin: '-45% 0px -55% 0px' means a section is considered "active" when
-  // its middle part is in the centre 10% band of the viewport.
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) setActive(e.target.id); // Update active section name
+          if (e.isIntersecting) setActive(e.target.id);
         });
       },
       { rootMargin: '-45% 0px -55% 0px', threshold: 0 }
     );
-    // Observe every section element
     SECTION_IDS.forEach((id) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
@@ -66,25 +65,47 @@ export const Navbar: React.FC = () => {
   // ── Effect 3: Prevent the page from scrolling when the mobile menu is open ──
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; }; // Always restore on cleanup
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
+  // ── Focus management for mobile menu ──
+  useEffect(() => {
+    if (menuOpen && closeButtonRef.current) {
+      closeButtonRef.current.focus();
+    }
+    if (!menuOpen) {
+      // Return focus to hamburger button when menu closes
+      const hamburger = document.getElementById('hamburger-btn');
+      hamburger?.focus();
+    }
   }, [menuOpen]);
 
   // Closes the mobile menu and smoothly scrolls to the target section
   const handleNavClick = (href: string) => {
-    setMenuOpen(false); // Close mobile menu first
+    setMenuOpen(false);
     const el = document.getElementById(href.replace('#', ''));
     el?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  // Escape key closes the mobile menu
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menuOpen]);
 
   return (
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? 'backdrop-blur-xl bg-void/80 border-b border-white/[0.06] py-2 xs:py-3' // Frosted glass on scroll
-            : 'bg-transparent py-3 xs:py-5'                                             // Transparent at top
+            ? 'backdrop-blur-xl bg-void/80 border-b border-white/[0.06] py-2 xs:py-3'
+            : 'bg-transparent py-3 xs:py-5'
         }`}
-        role="banner" // Accessibility landmark for the page header
+        role="banner"
       >
         <nav
           className="max-w-7xl mx-auto px-4 xs:px-6 flex items-center justify-between"
@@ -149,12 +170,12 @@ export const Navbar: React.FC = () => {
 
             {/* Hamburger / close button — only visible on mobile (hidden on md and above) */}
             <button
+              id="hamburger-btn"
               className="md:hidden flex items-center justify-center w-9 h-9 min-h-[44px] min-w-[44px] text-cream -m-[7px]"
-              onClick={() => setMenuOpen((o) => !o)} // Toggle menu open/closed
+              onClick={() => setMenuOpen((o) => !o)}
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={menuOpen} // Tells screen readers whether the menu is open
+              aria-expanded={menuOpen}
             >
-              {/* Show X when menu is open, hamburger icon when closed */}
               {menuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
@@ -162,21 +183,30 @@ export const Navbar: React.FC = () => {
       </header>
 
       {/* ── Mobile full-screen overlay menu ── */}
-      {/* AnimatePresence allows the exit animation to play before the element is removed from the DOM */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
             key="mobile-menu"
-            // Slides in from the right when opening, slides back out to the right when closing
             initial={{ opacity: 0, x: '100%' }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ type: 'tween', duration: 0.35, ease: 'easeInOut' }}
-            className="fixed inset-0 z-40 flex flex-col bg-void" // Covers the full screen
-            role="dialog"      // Accessibility: marks this as a dialog / modal
-            aria-modal="true"  // Tells screen readers that everything behind this is inert
+            className="fixed inset-0 z-40 flex flex-col bg-void"
+            role="dialog"
+            aria-modal="true"
             aria-label="Mobile navigation menu"
+            ref={menuRef}
           >
+            {/* Close button at the top */}
+            <button
+              ref={closeButtonRef}
+              className="absolute top-4 right-4 flex items-center justify-center w-10 h-10 text-cream"
+              onClick={() => setMenuOpen(false)}
+              aria-label="Close menu"
+            >
+              <X size={24} />
+            </button>
+
             {/* Decorative subtle grid pattern in the background */}
             <div
               className="absolute inset-0 opacity-[0.03]"
@@ -188,7 +218,7 @@ export const Navbar: React.FC = () => {
               aria-hidden="true"
             />
 
-            <div className="relative flex flex-col h-full px-4 xs:px-8 pt-20 xs:pt-24 pb-8 xs:pb-12 safe">
+            <div className="relative flex flex-col h-full px-4 xs:px-8 pt-16 xs:pt-20 pb-8 xs:pb-12 safe">
               {/* ── Mobile nav links ── */}
               <ul className="flex flex-col gap-4 xs:gap-6" role="list">
                 {NAV_LINKS.map(({ label, href }, i) => (
