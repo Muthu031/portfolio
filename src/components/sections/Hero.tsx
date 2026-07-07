@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import { ChevronDown, Play, User, Zap } from "lucide-react";
 import { useTypewriter } from "../../hooks/useTypewriter";
 import { useInView } from "../../hooks/useInView";
 import { Button } from "../ui/Button";
+
+const Particles = lazy(() => import("@tsparticles/react").then(m => ({ default: m.Particles })));
 
 interface HeroProps {
   onView?: () => void;
@@ -22,10 +24,33 @@ export function Hero({ onView }: HeroProps) {
       ref={ref}
       className="relative flex min-h-screen items-center justify-center overflow-hidden"
     >
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-surface to-background" />
+      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-background via-surface to-background" />
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(0,212,170,0.12),transparent_55%)]" />
 
-      <div className="mx-auto max-w-4xl px-4 py-20 text-center sm:px-6 lg:px-8">
+      <Suspense fallback={null}>
+        <Particles
+          options={{
+            background: { color: "transparent" },
+            fpsLimit: 60,
+            interactivity: {
+              events: { onClick: { enable: false }, onHover: { enable: false } },
+              modes: { push: { quantity: 0 } },
+            },
+            particles: {
+              color: { value: ["#00d4aa", "#f0883e"] },
+              links: { color: "#484f58", distance: 120, enable: true, opacity: 0.2, width: 1 },
+              move: { direction: "none", enable: true, outModes: { default: "bounce" }, random: false, speed: 0.6, straight: false },
+              number: { density: { enable: true }, value: 50 },
+              opacity: { value: 0.4 },
+              shape: { type: "circle" },
+              size: { value: { min: 1, max: 2 } },
+            },
+            detectRetina: true,
+          } as any}
+        />
+      </Suspense>
+
+      <div className="mx-auto max-w-4xl px-4 py-20 text-center sm:px-6 lg:px-8 relative z-10">
         <div className="mb-8 inline-flex items-center gap-3 rounded-lg border border-border bg-surface px-5 py-2.5">
           <span className="icon-chip-active">
             <User className="h-4 w-4" />

@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import confetti from "canvas-confetti";
 import { Mail, Phone, MapPin, Send, User, AtSign, MessageSquare } from "lucide-react";
 import { Button } from "../ui/Button";
+import { Chip } from "../ui/Chip";
 import { useInView } from "../../hooks/useInView";
 
 interface ContactProps {
@@ -21,6 +24,12 @@ export function Contact({ onView }: ContactProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    confetti({
+      particleCount: 60,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ["#00d4aa", "#f0883e", "#e6edf3"],
+    });
     alert("Message sent! (Demo only — connect to your backend)");
     setFormData({ name: "", email: "", message: "" });
   };
@@ -53,16 +62,21 @@ export function Contact({ onView }: ContactProps) {
             </p>
           </div>
 
-          <div className="game-panel p-6 sm:p-8">
+          <motion.div
+            className="game-panel p-6 sm:p-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.4 }}
+          >
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label
                   htmlFor="name"
                   className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-textSecondary"
                 >
-                  <span className="icon-chip">
+                  <Chip variant="default" size="sm">
                     <User className="h-3.5 w-3.5" />
-                  </span>
+                  </Chip>
                   Player Name
                 </label>
                 <input
@@ -83,9 +97,9 @@ export function Contact({ onView }: ContactProps) {
                   htmlFor="email"
                   className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-textSecondary"
                 >
-                  <span className="icon-chip">
+                  <Chip variant="default" size="sm">
                     <AtSign className="h-3.5 w-3.5" />
-                  </span>
+                  </Chip>
                   Contact Method
                 </label>
                 <input
@@ -106,9 +120,9 @@ export function Contact({ onView }: ContactProps) {
                   htmlFor="message"
                   className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-textSecondary"
                 >
-                  <span className="icon-chip">
+                  <Chip variant="default" size="sm">
                     <MessageSquare className="h-3.5 w-3.5" />
-                  </span>
+                  </Chip>
                   Quest Details
                 </label>
                 <textarea
@@ -124,7 +138,7 @@ export function Contact({ onView }: ContactProps) {
                 />
               </div>
 
-              <Button className="w-full">
+              <Button className="w-full" size="lg">
                 <Send className="h-4 w-4" />
                 Send Message
               </Button>
@@ -132,25 +146,25 @@ export function Contact({ onView }: ContactProps) {
 
             <div className="mt-8 grid gap-4 border-t border-border pt-6 sm:grid-cols-3">
               <div className="flex items-center gap-3 text-sm text-textSecondary">
-                <span className="icon-chip">
+                <Chip variant="default" size="sm">
                   <Mail className="h-4 w-4 text-accent-teal" />
-                </span>
+                </Chip>
                 <span>hello@muthukumaran.dev</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-textSecondary">
-                <span className="icon-chip">
+                <Chip variant="default" size="sm">
                   <Phone className="h-4 w-4 text-accent-teal" />
-                </span>
+                </Chip>
                 <span>+91 98765 43210</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-textSecondary">
-                <span className="icon-chip">
+                <Chip variant="default" size="sm">
                   <MapPin className="h-4 w-4 text-accent-teal" />
-                </span>
+                </Chip>
                 <span>Chennai, India</span>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

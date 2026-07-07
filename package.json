@@ -10,11 +10,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-tabs": "^1.1.17",
+    "@radix-ui/react-tooltip": "^1.2.12",
+    "@tsparticles/engine": "^4.3.1",
+    "@tsparticles/react": "^4.3.1",
+    "canvas-confetti": "^1.9.4",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.42.2",
+    "howler": "^2.2.4",
     "lucide-react": "^1.23.0",
     "react": "^19.2.7",
+    "react-circular-progressbar": "^2.2.0",
     "react-dom": "^19.2.7",
+    "react-parallax-tilt": "^1.7.333",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {

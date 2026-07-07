@@ -8,8 +8,11 @@ import {
   Zap,
   MessageSquare,
   Mail,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import { useScrollProgress } from "../../hooks/useScrollProgress";
+import { Chip } from "../ui/Chip";
 import { cn } from "../../lib/utils";
 
 const sections = [
@@ -23,6 +26,7 @@ const sections = [
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
   const scrollProgress = useScrollProgress();
   const [activeSection, setActiveSection] = useState("hero");
 
@@ -61,7 +65,7 @@ export function Navbar() {
             onClick={() => scrollTo("hero")}
             className="flex items-center gap-2 font-mono text-sm font-bold text-text hover:text-accent-teal transition-colors"
           >
-            <span className="icon-chip-active">
+            <Chip variant="active" size="sm">
               <svg
                 className="h-4 w-4"
                 fill="none"
@@ -75,7 +79,7 @@ export function Navbar() {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-            </span>
+            </Chip>
             MUTHUKUMARAN
           </button>
 
@@ -94,9 +98,9 @@ export function Navbar() {
                       : "text-textSecondary hover:text-text hover:bg-surfaceAlt"
                   )}
                 >
-                  <span className={cn("icon-chip", isActive && "icon-chip-active")}>
+                  <Chip variant={isActive ? "active" : "default"} size="sm">
                     <Icon className="h-3.5 w-3.5" />
-                  </span>
+                  </Chip>
                   {section.label}
                   {isActive && (
                     <span className="h-1 w-1 rounded-full bg-accent-teal shadow-[0_0_6px_rgba(0,212,170,0.6)]" />
@@ -106,13 +110,22 @@ export function Navbar() {
             })}
           </nav>
 
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden rounded-md p-2 text-textSecondary hover:text-text hover:bg-surfaceAlt transition-colors"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              className="icon-chip hover:border-accent-teal hover:text-accent-teal transition-colors"
+              aria-label={soundEnabled ? "Mute sounds" : "Enable sounds"}
+            >
+              {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+            </button>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden rounded-md p-2 text-textSecondary hover:text-text hover:bg-surfaceAlt transition-colors"
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -149,9 +162,9 @@ export function Navbar() {
                       : "text-textSecondary hover:text-text hover:bg-surfaceAlt"
                   )}
                 >
-                  <span className={cn("icon-chip", isActive && "icon-chip-active")}>
+                  <Chip variant={isActive ? "active" : "default"} size="sm">
                     <Icon className="h-4 w-4" />
-                  </span>
+                  </Chip>
                   {section.label}
                 </button>
               );
@@ -162,3 +175,4 @@ export function Navbar() {
     </header>
   );
 }
+
