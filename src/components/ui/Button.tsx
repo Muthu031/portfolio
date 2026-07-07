@@ -1,115 +1,45 @@
-// ─── Button Component ─────────────────────────────────────────────────────────
-// A flexible, reusable button that can render either as a <button> element or
-// an <a> link depending on whether an 'href' prop is provided.
-//
-// Features:
-//   • Three visual styles (variant): primary (cyan), secondary (golden), ghost (subtle)
-//   • Three sizes: sm, md, lg
-//   • Optional icon on the left (icon) or right (iconRight)
-//   • When href is provided, renders as a Framer Motion <a> tag (great for links)
-//   • When no href, renders as a Framer Motion <button> (great for actions / forms)
-//   • Hover and tap animations (lifts slightly, scales on hover; squishes on click)
-//   • Disabled state: reduces opacity and blocks pointer events
-//
-// Usage:
-//   <Button variant="primary" href="#projects" icon={<ArrowRight />}>View Work</Button>
-//   <Button variant="secondary" type="submit">Send Message</Button>
+import { type ReactNode, type HTMLAttributes } from "react";
+import { cn } from "../../lib/utils";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-
-interface ButtonProps {
-  children: React.ReactNode;           // Text or content inside the button
-  variant?: 'primary' | 'secondary' | 'ghost'; // Visual style
-  size?: 'sm' | 'md' | 'lg';          // Padding and font size
-  href?: string;                       // If provided, renders as a link (<a> tag)
-  onClick?: () => void;                // Click handler (only used when no href)
-  className?: string;                  // Extra Tailwind classes to merge in
-  icon?: React.ReactNode;              // Icon shown on the LEFT of the label
-  iconRight?: React.ReactNode;         // Icon shown on the RIGHT of the label
-  target?: string;                     // e.g. '_blank' to open link in a new tab
-  rel?: string;                        // e.g. 'noopener noreferrer' for external links
-  download?: boolean | string;         // Triggers a file download when href is a file
-  type?: 'button' | 'submit' | 'reset'; // HTML button type (default: 'button')
-  disabled?: boolean;                  // Disables the button (greys it out)
-  'aria-label'?: string;               // Accessible label for screen readers
+interface ButtonProps extends HTMLAttributes<HTMLButtonElement | HTMLAnchorElement> {
+  children: ReactNode;
+  variant?: "primary" | "secondary" | "ghost";
+  href?: string;
+  disabled?: boolean;
 }
 
-// Maps size names to Tailwind padding + text-size classes
-const sizeMap = {
-  sm: 'px-4 py-2 text-xs tracking-widest',
-  md: 'px-6 py-3 text-sm tracking-wider',
-  lg: 'px-8 py-4 text-base tracking-widest',
-};
-
-// Maps variant names to Tailwind colour / border / glow classes
-const variantMap = {
-  primary:
-    'border border-electric text-electric hover:bg-electric/10 glow-electric', // Cyan neon style
-  secondary:
-    'border border-golden text-golden hover:bg-golden/10 glow-golden',         // Golden neon style
-  ghost:
-    'border border-white/10 text-cream hover:border-electric/50 hover:text-electric', // Subtle, changes on hover
-};
-
-export const Button: React.FC<ButtonProps> = ({
+export function Button({
   children,
-  variant = 'primary', // Default to cyan primary style
-  size = 'md',         // Default to medium size
-  href,
   onClick,
-  className = '',
-  icon,
-  iconRight,
-  target,
-  rel,
-  download,
-  type = 'button',
+  href,
+  variant = "primary",
+  className,
   disabled = false,
-  'aria-label': ariaLabel,
-}) => {
-  // Build the complete class string by combining size, variant, disabled state, and custom classes
-  const base = `inline-flex items-center gap-2 font-mono transition-all duration-300 ${sizeMap[size]} ${variantMap[variant]} ${disabled ? 'opacity-50 pointer-events-none' : ''} ${className}`;
+  ...props
+}: ButtonProps) {
+  const baseStyles =
+    "inline-flex items-center justify-center gap-2 font-display font-semibold tracking-wide uppercase text-sm transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed";
 
-  // The inner content: optional left icon, label text, optional right icon
-  const content = (
-    <>
-      {icon && <span className="flex-shrink-0">{icon}</span>}
-      <span>{children}</span>
-      {iconRight && <span className="flex-shrink-0">{iconRight}</span>}
-    </>
-  );
+  const variants = {
+    primary:
+      "bg-accent-teal text-background hover:brightness-110 active:scale-95",
+    secondary:
+      "bg-transparent border border-border text-text hover:border-borderHighlight hover:bg-surfaceAlt active:scale-95",
+    ghost:
+      "text-textSecondary hover:text-text hover:bg-surfaceAlt",
+  };
 
-  // If an href is provided, render as an animated anchor link
-  if (href) {
-    return (
-      <motion.a
-        href={href}
-        target={target}
-        rel={rel}
-        download={download}
-        aria-label={ariaLabel}
-        className={base}
-        whileHover={{ y: -2, scale: 1.02 }} // Lifts up slightly on hover
-        whileTap={{ scale: 0.97 }}           // Squishes slightly when clicked
-      >
-        {content}
-      </motion.a>
-    );
-  }
+  const Component = href ? "a" : "button";
 
-  // Otherwise, render as an animated button element
   return (
-    <motion.button
-      type={type}
+    <Component
+      href={href}
       onClick={onClick}
       disabled={disabled}
-      aria-label={ariaLabel}
-      className={base}
-      whileHover={{ y: -2, scale: 1.02 }}
-      whileTap={{ scale: 0.97 }}
+      className={cn(baseStyles, variants[variant], className)}
+      {...props}
     >
-      {content}
-    </motion.button>
+      {children}
+    </Component>
   );
-};
+}

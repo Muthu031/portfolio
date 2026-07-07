@@ -1,295 +1,113 @@
-/* ============================================================
-   GLOBAL STYLES — Portfolio
-   ============================================================
-   This file applies styles to the entire site.
-   It is imported once in main.tsx and affects every component.
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-   Structure:
-     1. Tailwind directives   — loads all Tailwind utilities
-     2. CSS variables          — shared colour tokens
-     3. Base reset & fonts     — remove default browser spacing
-     4. Custom scrollbar       — thin cyan scrollbar
-     5. Custom cursor          — hides default OS cursor on desktop
-     6. Noise grain overlay    — subtle film-grain texture over the page
-     7. Smooth section anchors — offset for the fixed navbar when jumping to sections
-     8. Glitch effect          — CSS animation on the hero heading
-     9. Neon glow utilities    — reusable glow box-shadow classes
-    10. Text selection          — custom highlight colour
-    11. Focus ring              — accessible keyboard-focus outline
-    12. Shimmer animation       — animated gradient text effect
-    13. Timeline animation      — the vertical line draw-in effect
-    14. Lazy image fade         — images fade in after loading
-   ============================================================ */
+@layer base {
+  :root {
+    --color-background: #0d1117;
+    --color-surface: #161b22;
+    --color-surface-alt: #1c2128;
+    --color-surface-highlight: #21262d;
+    --color-text: #e6edf3;
+    --color-text-secondary: #8b949e;
+    --color-border: #30363d;
+    --color-border-highlight: #484f58;
+    --color-accent-teal: #00d4aa;
+    --color-accent-orange: #f0883e;
+  }
 
-@tailwind base;       /* Tailwind's CSS reset / normalise layer */
-@tailwind components; /* Tailwind's component class layer (we don't use it much) */
-@tailwind utilities;  /* All the utility classes like flex, text-sm, bg-void, etc. */
+  html {
+    scroll-behavior: smooth;
+  }
 
-/* ─── Google Fonts fallback (loaded via HTML) ─────────────── */
+  body {
+    @apply bg-background text-text antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(0, 212, 170, 0.08) 0%, transparent 60%),
+      linear-gradient(rgba(48, 54, 61, 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(48, 54, 61, 0.3) 1px, transparent 1px);
+    background-size: 100% 100%, 24px 24px, 24px 24px;
+    background-position: center top, center top, center top;
+    background-repeat: no-repeat, repeat, repeat;
+  }
 
-/* ─── CSS Custom Properties ──────────────────────────────── */
-/* These are CSS variables \u2014 reusable colour values referenced by Tailwind config
-   and sometimes directly in inline styles across components. */
-:root {
-  --electric: #00f5ff; /* Bright cyan  \u2014 primary accent colour */
-  --golden:   #ffb800; /* Amber/gold   \u2014 secondary accent colour */
-  --void:     #0a0a0f; /* Very dark navy \u2014 the page background */
-  --panel:    #0f0f1a; /* Slightly lighter dark \u2014 section / panel background */
-  --card:     #0d0d1a; /* Card background, between void and panel */
-  --cream:    #e8e8f0; /* Off-white \u2014 main readable text colour */
-  --muted:    #8888aa; /* Muted purple-grey \u2014 secondary / caption text */
-}
-
-/* ─── Base Reset & Font ──────────────────────────────────── */
-/* Remove all default margins and paddings from every element. */
-*,
-*::before,
-*::after {
-  box-sizing: border-box; /* Include padding and border in the element's width/height */
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  scroll-behavior: smooth;       /* Makes anchor-link jumps animate smoothly */
-  scrollbar-width: thin;         /* Firefox: make the scrollbar slim */
-  scrollbar-color: #00f5ff #0a0a0f; /* Firefox: cyan thumb on dark track */
-}
-
-body {
-  background-color: #0a0a0f;          /* Dark void background */
-  color: #e8e8f0;                     /* Default text colour (cream) */
-  font-family: 'Sora', ui-sans-serif, system-ui, sans-serif; /* Primary font with fallbacks */
-  line-height: 1.6;                   /* Comfortable reading line height */
-  overflow-x: hidden;                 /* Prevent accidental horizontal scroll */
-  -webkit-font-smoothing: antialiased;        /* Crisp fonts on macOS/Chrome */
-  -moz-osx-font-smoothing: grayscale;         /* Crisp fonts on macOS/Firefox */
-}
-
-/* ─── Custom Scrollbar (WebKit browsers: Chrome, Edge, Safari) ─── */
-::-webkit-scrollbar {
-  width: 3px; /* Very thin scrollbar */
-}
-::-webkit-scrollbar-track {
-  background: #0a0a0f; /* Track matches the page background */
-}
-::-webkit-scrollbar-thumb {
-  background: #00f5ff;   /* Cyan thumb */
-  border-radius: 2px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #00c4cc;   /* Slightly darker cyan when hovered */
-}
-
-/* ─── Custom Cursor ──────────────────────────────────────── */
-/* Hide the default OS mouse pointer on desktop devices that have a precise
-   pointer (i.e. not touchscreens). The CustomCursor component draws its own
-   animated dot + ring using a canvas approach via JavaScript. */
-@media (pointer: fine) {
-  * {
-    cursor: none !important; /* Remove browser cursor; CustomCursor takes over */
+  ::selection {
+    @apply bg-accent-teal/20 text-text;
   }
 }
 
-/* ─── Noise Grain Overlay ────────────────────────────────── */
-/* A fixed pseudo-element covering the entire screen that shows a subtle
-   film-grain / noise texture. It makes the dark background feel more
-   premium and less flat. pointer-events: none means it doesn't block clicks. */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
-  pointer-events: none; /* Don't block mouse events */
-  z-index: 9998;        /* Sit just below the custom cursor (z-index 99999) */
-  opacity: 0.4;
+@layer components {
+  .container {
+    @apply mx-auto max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .game-panel {
+    @apply relative rounded-lg border border-border bg-surface p-6 transition-all duration-200;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+
+  .game-panel:hover {
+    border-color: theme("colors.borderHighlight");
+    box-shadow: 0 0 20px rgba(0, 212, 170, 0.08), inset 0 1px 0 rgba(230, 237, 243, 0.04);
+  }
+
+  .game-input {
+    @apply w-full rounded-none border-l-4 border-border bg-background px-4 py-3 text-sm text-text placeholder:text-textSecondary/60 transition-all duration-150;
+    border-top: none;
+    border-right: none;
+    border-bottom: 1px solid theme("colors.border");
+    outline: none;
+  }
+
+  .game-input:focus {
+    border-left-color: theme("colors.accent.teal");
+    box-shadow: 0 0 16px rgba(0, 212, 170, 0.15);
+  }
+
+  .game-btn {
+    @apply inline-flex items-center justify-center gap-2 font-display font-semibold tracking-wide uppercase text-sm transition-all duration-150;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    position: relative;
+    border: none;
+  }
+
+  .game-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  }
+
+  .game-btn:active {
+    transform: scale(0.96);
+    filter: brightness(0.9);
+  }
+
+  .icon-chip {
+    @apply flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surfaceAlt text-textSecondary transition-colors;
+  }
+
+  .icon-chip-active {
+    @apply border-accent-teal text-accent-teal bg-accent-teal/10;
+  }
+
+  .section-divider {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-border to-transparent;
+  }
 }
 
-/* ─── Smooth Section Anchoring ───────────────────────────── */
-/* When the user clicks a nav link like "#about", the browser jumps to that
-   section. scroll-margin-top adds a gap so the section heading isn't hidden
-   behind the fixed navbar (which is ~80px tall). */
-section {
-  scroll-margin-top: 80px;
-}
-
-/* ─── Glitch Effect ──────────────────────────────────────── */
-/* Applied to the big name heading in the Hero section.
-   Two cloned layers sit on top of the text and occasionally shift
-   sideways using CSS animations, creating a brief "glitch" flicker. */
-.glitch-text {
-  position: relative;
-}
-
-/* Both ::before and ::after copy the text from the data-text attribute */
-.glitch-text::before,
-.glitch-text::after {
-  content: attr(data-text); /* Mirrors the element's text */
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-/* Top half glitch layer — coloured cyan */
-.glitch-text::before {
-  animation: glitch-layer-1 8s infinite; /* Runs every 8 seconds */
-  color: #00f5ff;
-  clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%); /* Only show the top 40% of the layer */
-  transform: translate(0);
-  opacity: 0; /* Hidden most of the time */
-}
-
-/* Bottom half glitch layer — coloured golden */
-.glitch-text::after {
-  animation: glitch-layer-2 8s infinite;
-  color: #ffb800;
-  clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%); /* Only show the bottom 40% */
-  transform: translate(0);
-  opacity: 0;
-}
-
-/* Keyframes: stays invisible for ~88% of the 8s cycle, then rapidly flickers */
-@keyframes glitch-layer-1 {
-  0%, 88%, 100% { transform: translate(0); opacity: 0; }
-  90%  { transform: translate(-4px, 2px);  opacity: 0.9; } /* Shift left and down */
-  92%  { transform: translate(4px, -2px);  opacity: 0; }   /* Shift right and up */
-  94%  { transform: translate(-3px, 1px);  opacity: 0.8; }
-  96%  { transform: translate(2px, -1px);  opacity: 0; }
-}
-
-@keyframes glitch-layer-2 {
-  0%, 89%, 100% { transform: translate(0); opacity: 0; }
-  91%  { transform: translate(4px, 2px);   opacity: 0.9; } /* Shift right and down */
-  93%  { transform: translate(-4px, -2px); opacity: 0; }
-  95%  { transform: translate(3px, 1px);   opacity: 0.8; }
-  97%  { transform: translate(-2px, -1px); opacity: 0; }
-}
-
-/* ─── Neon Glow Utilities ────────────────────────────────── */
-/* Reusable classes that add a neon box-shadow glow effect.
-   Used on buttons and other interactive elements. */
-.glow-electric {
-  box-shadow: 0 0 20px rgba(0, 245, 255, 0.25), 0 0 40px rgba(0, 245, 255, 0.1);
-}
-
-.glow-electric:hover {
-  box-shadow: 0 0 30px rgba(0, 245, 255, 0.4), 0 0 60px rgba(0, 245, 255, 0.15); /* Brighter on hover */
-}
-
-.glow-golden {
-  box-shadow: 0 0 20px rgba(255, 184, 0, 0.25), 0 0 40px rgba(255, 184, 0, 0.1);
-}
-
-.glow-golden:hover {
-  box-shadow: 0 0 30px rgba(255, 184, 0, 0.4), 0 0 60px rgba(255, 184, 0, 0.15);
-}
-
-/* ─── Text Selection ─────────────────────────────────────── */
-/* When the user highlights text, show a cyan-tinted selection colour
-   instead of the default blue. */
-::selection {
-  background: rgba(0, 245, 255, 0.25);
-  color: #e8e8f0;
-}
-
-/* ─── Focus Ring ─────────────────────────────────────────── */
-/* When a user navigates with the keyboard (Tab key), show a clearly visible
-   cyan outline around the focused element. Important for accessibility. */
-:focus-visible {
-  outline: 2px solid #00f5ff;
-  outline-offset: 3px;
-  border-radius: 2px;
-}
-
-/* ─── Shimmer Animation Utility ──────────────────────────── */
-/* Applies a moving gradient highlight that sweeps across text from right to left.
-   Add the class "shimmer-text" to any element to activate it. */
-.shimmer-text {
-  background: linear-gradient(
-    90deg,
-    #e8e8f0 0%,
-    #00f5ff 40%,  /* Cyan highlight in the middle */
-    #e8e8f0 60%,
-    #e8e8f0 100%
-  );
-  background-size: 200% auto;          /* Oversized so the gradient can travel */
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent; /* Makes the gradient show through the text */
-  background-clip: text;
-  animation: shimmer-anim 4s linear infinite; /* Continuously moves the gradient */
-}
-
-@keyframes shimmer-anim {
-  0%   { background-position: 200% center; } /* Start gradient off to the right */
-  100% { background-position: -200% center; } /* End gradient off to the left */
-}
-
-/* ─── Timeline Draw Animation ────────────────────────────── */
-/* Used by the About section to animate the vertical line drawing downward. */
-.timeline-line-enter {
-  animation: draw-line 1.2s ease forwards;
-}
-
-@keyframes draw-line {
-  from { height: 0%; }   /* Line starts invisible (zero height) */
-  to   { height: 100%; } /* Line grows to full height */
-}
-
-/* ─── Responsive Image Lazy Load Fade ───────────────────── */
-/* Images with loading="lazy" start invisible and fade in once loaded.
-   Add the class "loaded" via JavaScript (or an onLoad handler) to trigger the fade. */
-img[loading='lazy'] {
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-img[loading='lazy'].loaded {
-  opacity: 1;
-}
-
-/* ─── Focus Ring ─────────────────────────────────────────── */
-:focus-visible {
-  outline: 2px solid #00f5ff;
-  outline-offset: 3px;
-  border-radius: 2px;
-}
-
-/* ─── Shimmer Animation Utility ──────────────────────────── */
-.shimmer-text {
-  background: linear-gradient(
-    90deg,
-    #e8e8f0 0%,
-    #00f5ff 40%,
-    #e8e8f0 60%,
-    #e8e8f0 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer-anim 4s linear infinite;
-}
-
-@keyframes shimmer-anim {
-  0%   { background-position: 200% center; }
-  100% { background-position: -200% center; }
-}
-
-/* ─── Timeline Draw Animation ────────────────────────────── */
-.timeline-line-enter {
-  animation: draw-line 1.2s ease forwards;
-}
-
-@keyframes draw-line {
-  from { height: 0%; }
-  to   { height: 100%; }
-}
-
-/* ─── Responsive Image Lazy Load Fade ───────────────────── */
-img[loading='lazy'] {
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-img[loading='lazy'].loaded {
-  opacity: 1;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

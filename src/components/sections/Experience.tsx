@@ -1,134 +1,83 @@
-// ─── Experience Section ──────────────────────────────────────────────────────
-// Shows a vertical timeline of professional experience entries.
-//
-// Layout:
-//   1. Section heading  — "// 04  Experience"
-//   2. Timeline
-//        • Animated vertical line (cyan → gold gradient) drawn via scaleY
-//          when the timeline first scrolls into view
-//        • One <article> per experience entry:
-//            - Left:  circular lettermark node (coloured per entry)
-//            - Right: job title, company, date range, achievement bullet list
-import React from 'react';
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { CheckCircle2 } from 'lucide-react';
-import { experiences } from '../../data/experience';
+import { useEffect } from "react";
+import { Briefcase, CheckCircle2 } from "lucide-react";
+import { SectionHeading } from "../ui/SectionHeading";
+import { useInView } from "../../hooks/useInView";
+import { experience } from "../../data/experience";
 
-// ─── Experience Section Component ───────────────────────────────────────────
-export const Experience: React.FC = () => {
-  // lineRef is attached to the timeline container.
-  // When it enters the viewport, lineInView becomes true and the vertical line animates.
-  const { ref: lineRef, inView: lineInView } = useInView({ triggerOnce: true, threshold: 0.05 });
+interface ExperienceProps {
+  onView?: () => void;
+}
+
+export function Experience({ onView }: ExperienceProps) {
+  const [ref, isInView] = useInView({ threshold: 0.2 });
+
+  useEffect(() => {
+    if (isInView && onView) onView();
+  }, [isInView, onView]);
 
   return (
-    <section id="experience" className="py-28 bg-panel/40" aria-label="Experience section">
-      <div className="max-w-5xl mx-auto px-6">
-        {/* Header */}
-        <motion.div
-          className="flex items-center gap-4 mb-20"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="font-mono text-electric text-sm tracking-widest">// 04</span>
-          <h2 className="font-mono text-3xl md:text-4xl font-bold text-cream">Experience</h2>
-          <div className="flex-1 h-px bg-gradient-to-r from-electric/30 to-transparent" aria-hidden="true" />
-        </motion.div>
+    <section id="experience" ref={ref} className="py-20 sm:py-32">
+      <div className="container">
+        <SectionHeading
+          title="Quest Log"
+          subtitle="Completed stages and milestones"
+          icon={<Briefcase className="h-5 w-5" />}
+        />
 
-        {/* ── Vertical timeline ── */}
-        <div className="relative" ref={lineRef}>
-          {/* Background track (white/6%) with an animated gradient overlay that grows downwards */}
-          <div
-            className="absolute left-[27px] top-0 bottom-0 w-px bg-white/[0.06]"
-            aria-hidden="true"
-          >
-            {/* scaleY starts at 0 and animates to 1 once the timeline is in view */}
-            <motion.div
-              className="w-full origin-top"
-              style={{ background: 'linear-gradient(to bottom, #00f5ff, #ffb800, transparent)' }}
-              initial={{ scaleY: 0 }}
-              animate={lineInView ? { scaleY: 1 } : { scaleY: 0 }}
-              transition={{ duration: 1.8, ease: 'easeOut' }}
-            />
-          </div>
+        <div className="relative">
+          <div className="absolute left-4 top-0 hidden h-full w-px bg-border sm:block md:left-6" />
 
-          {/* One article per job, staggered entrance from the left */}
-          <div className="flex flex-col gap-16">
-            {experiences.map((exp, i) => (
-              <motion.article
-                key={exp.id}
-                className="flex gap-8"
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ delay: i * 0.15, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                aria-label={`${exp.title} at ${exp.company}`}
+          <div className="space-y-8">
+            {experience.map((item, index) => (
+              <div
+                key={item.id}
+                className="relative flex gap-6 sm:gap-8 animate-fade-in"
+                style={{ animationDelay: `${index * 80}ms` }}
               >
-                {/* Left: circular timeline node coloured with the experience's accent colour */}
-                <div className="flex-shrink-0 flex flex-col items-center">
-                  <motion.div
-                    className="w-14 h-14 rounded-full flex items-center justify-center font-mono font-bold text-sm border-2 z-10 relative"
-                    style={{
-                      background:   `${exp.color}15`, // Tinted background
-                      borderColor:  exp.color,
-                      color:        exp.color,
-                      boxShadow:    `0 0 20px ${exp.color}20`,
-                    }}
-                    whileHover={{ scale: 1.1 }}
-                  >
-                    {exp.lettermark} {/* e.g. "SW" for Skandvel Webtech */}
-                  </motion.div>
-                </div>
-
-                {/* Right: title, date badge, company name, achievement bullets */}
-                <div className="flex-1 pt-2 pb-2">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-1">
-                    <h3 className="font-mono font-bold text-cream text-lg">{exp.title}</h3>
-                    <span
-                      className="font-mono text-xs tracking-widest px-3 py-1 border self-start sm:self-auto"
-                      style={{ color: exp.color, borderColor: `${exp.color}30`, background: `${exp.color}08` }}
-                    >
-                      {exp.period}
-                    </span>
+                <div className="hidden sm:flex sm:flex-col sm:items-center sm:justify-center">
+                  <div className="icon-chip-active">
+                    <CheckCircle2 className="h-5 w-5 md:h-6 md:w-6" />
                   </div>
-
-                  <p
-                    className="font-mono text-sm mb-5 font-semibold"
-                    style={{ color: exp.color }}
-                  >
-                    @ {exp.company}
-                  </p>
-
-                  {/* Achievement bullet list — each item slides in from the left with a delay */}
-                  <ul className="flex flex-col gap-3" aria-label={`Achievements at ${exp.company}`}>
-                    {exp.achievements.map((achievement, ai) => (
-                      <motion.li
-                        key={ai}
-                        className="flex items-start gap-3 text-muted text-sm leading-relaxed"
-                        initial={{ opacity: 0, x: -10 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: i * 0.15 + ai * 0.1 + 0.3 }}
-                      >
-                        {/* Coloured tick icon matches the experience colour */}
-                        <CheckCircle2
-                          size={15}
-                          className="flex-shrink-0 mt-0.5"
-                          style={{ color: exp.color }}
-                          aria-hidden="true"
-                        />
-                        <span>{achievement}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
                 </div>
-              </motion.article>
+
+                <div className="flex-1 pb-8">
+                  <div className="game-panel p-5 sm:p-6">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                      <div>
+                        <h3 className="text-lg font-display font-bold uppercase tracking-wide text-text">
+                          {item.role}
+                        </h3>
+                        <p className="text-sm font-medium text-accent-teal">
+                          {item.company}
+                        </p>
+                      </div>
+                      <span className="inline-flex w-fit items-center rounded-md bg-surfaceAlt px-2.5 py-1 text-xs font-mono text-textSecondary border border-border">
+                        {item.period}
+                      </span>
+                    </div>
+
+                    <p className="mt-3 text-sm leading-relaxed text-textSecondary">
+                      {item.description}
+                    </p>
+
+                    <ul className="mt-4 space-y-2">
+                      {item.highlights.map((highlight) => (
+                        <li
+                          key={highlight}
+                          className="flex items-start gap-2 text-sm text-textSecondary"
+                        >
+                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-teal shadow-[0_0_4px_rgba(0,212,170,0.5)]" />
+                          {highlight}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </div>
     </section>
   );
-};
+}

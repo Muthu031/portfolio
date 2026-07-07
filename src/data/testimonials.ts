@@ -1,44 +1,28 @@
-// ─── Testimonials Data ────────────────────────────────────────────────────────────
-// This file holds the colleague and manager quotes shown in the auto-
-// advancing carousel on the Testimonials section.
-//
-// To add a new testimonial: copy one object, fill in the fields, and
-// add it to the array. The carousel will include it automatically.
-
-import { Testimonial } from '../types';
+import type { Testimonial } from "../types";
 
 export const testimonials: Testimonial[] = [
   {
-    // ── Testimonial 1 ──
-    id: '1',
+    id: "rajesh",
+    name: "Rajesh Kumar",
+    role: "CTO",
+    company: "Skandvel Webtech",
     quote:
-      "Muthu consistently delivered production-quality code under tight UK client deadlines. His understanding of Node.js internals and PostgreSQL optimisation is well above what you'd expect for his experience level. He takes ownership end-to-end — from API design to deployment — and the code is always clean.",
-    name: 'Rajesh Kumar',
-    title: 'Tech Lead',
-    company: 'Skandvel Webtech',
-    initials: 'RK',        // Shown in the avatar circle
-    avatarColor: '#00f5ff', // Cyan avatar
+      "Muthukumaran consistently delivers clean, scalable code. His ability to break down complex problems and ship production-ready features is exceptional.",
   },
   {
-    // ── Testimonial 2 ──
-    id: '2',
+    id: "james",
+    name: "James Whitfield",
+    role: "Senior Engineer",
+    company: "TechForge Labs",
     quote:
-      "The ConnectMe platform Muthu worked on handles some genuinely complex multi-tenant logic, and he navigated it with a maturity that impressed the whole team. His API design is intuitive, his error handling is thorough, and he documents as he goes. Rare qualities.",
-    name: 'James Whitfield',
-    title: 'Project Manager',
-    company: 'UK Enterprise Client',
-    initials: 'JW',
-    avatarColor: '#ffb800', // Golden avatar
+      "A rare combination of backend rigor and frontend sensibility. Muthu's contributions elevated our entire codebase and set new standards for quality.",
   },
   {
-    // ── Testimonial 3 ──
-    id: '3',
+    id: "anand",
+    name: "Anand Selvam",
+    role: "Product Manager",
+    company: "AttendTrack",
     quote:
-      "What stands out about Muthukumaran is his debugging instinct. He can trace a bug through three service layers faster than most seniors I've worked with. His TypeScript is strict, his Postgres queries are optimised, and he ships with confidence. A developer you can trust with critical systems.",
-    name: 'Anand Selvam',
-    title: 'Senior Backend Engineer',
-    company: 'Skandvel Webtech',
-    initials: 'AS',
-    avatarColor: '#a78bfa', // Violet avatar
+      "Leading the capstone project, Muthu turned an ambitious vision into a reliable platform. His communication and technical ownership were invaluable.",
   },
 ];
