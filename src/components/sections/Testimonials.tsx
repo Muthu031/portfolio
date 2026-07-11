@@ -1,89 +1,76 @@
-import { useEffect, useRef } from "react";
-import { Trophy, Star } from "lucide-react";
-import { toast } from "sonner";
+import { useEffect } from "react";
+import { motion } from "framer-motion";
+import { Trophy, Quote } from "lucide-react";
 import { SectionHeading } from "../ui/SectionHeading";
 import { Panel } from "../ui/Panel";
-import { Chip } from "../ui/Chip";
 import { useInView } from "../../hooks/useInView";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { showAchievementToast } from "../ui/AchievementToast";
 import { testimonials } from "../../data/testimonials";
+import type { Testimonial } from "../../types";
 
-interface TestimonialsProps {
-  onView?: () => void;
-}
+function TestimonialCard({ testimonial, index }: { testimonial: Testimonial; index: number }) {
+  const [ref, isInView] = useInView({ threshold: 0.4 });
+  const reducedMotion = useReducedMotion();
 
-export function Testimonials({ onView }: TestimonialsProps) {
-  const [ref, isInView] = useInView({ threshold: 0.2 });
-  const hasFired = useRef(false);
-
+  // Each endorsement unlocks its own achievement toast the moment it scrolls
+  // into view — once per card per page load (useInView triggerOnce keeps this from re-firing).
   useEffect(() => {
-    if (isInView && !hasFired.current && onView) {
-      hasFired.current = true;
-      onView();
-      toast.custom(() => (
-        <div className="flex items-start gap-3 overflow-hidden rounded-lg border border-border bg-surface p-4 shadow-2xl shadow-black/40">
-          <div className="h-1 w-full bg-gradient-to-r from-accent-teal via-accent-orange to-accent-teal absolute top-0 left-0" />
-          <Chip variant="achievement" className="mt-1">
-            <Trophy className="h-4 w-4" />
-          </Chip>
-          <div className="flex-1">
-            <p className="text-sm font-display font-bold uppercase tracking-wider text-accent-teal">
-              Achievement Unlocked
-            </p>
-            <p className="text-sm font-semibold text-text">Guild Reviews Discovered</p>
-            <p className="text-xs text-textSecondary">Achievements from your allies.</p>
-          </div>
-        </div>
-      ), { duration: 4000 });
+    if (isInView) {
+      showAchievementToast({
+        title: `Endorsed by ${testimonial.name}`,
+        description: `${testimonial.role} at ${testimonial.company}`,
+        variant: "gold",
+      });
     }
-  }, [isInView, onView]);
+  }, [isInView, testimonial]);
 
   return (
-    <section id="testimonials" ref={ref} className="py-20 sm:py-32 bg-surface/50">
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 24 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+      transition={{ duration: reducedMotion ? 0 : 0.45, delay: reducedMotion ? 0 : index * 0.08 }}
+    >
+      <Panel variant="achievement" hoverable className="relative h-full p-6">
+        <Quote className="absolute right-5 top-5 h-8 w-8 text-accent-gold/15" />
+        <p className="text-sm leading-relaxed text-textSecondary">&ldquo;{testimonial.quote}&rdquo;</p>
+        <div className="mt-6 flex items-center gap-3 border-t border-border pt-5">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center border-2 border-accent-gold bg-accent-gold/10 font-display font-bold text-accent-gold">
+            {testimonial.initials}
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-text">{testimonial.name}</p>
+            <p className="text-xs text-textSecondary">{testimonial.role} · {testimonial.company}</p>
+          </div>
+        </div>
+      </Panel>
+    </motion.div>
+  );
+}
+
+export function Testimonials() {
+  const [headingRef, headingInView] = useInView({ threshold: 0.2 });
+
+  return (
+    <section id="testimonials" ref={headingRef} className="py-20 sm:py-28">
       <div className="container">
         <SectionHeading
-          title="Guild Reviews"
-          subtitle="Achievements unlocked with past allies"
+          index="LOG_04"
+          title="Achievements Unlocked"
+          subtitle="Endorsements collected from colleagues and clients."
           icon={<Trophy className="h-5 w-5" />}
         />
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {testimonials.map((testimonial, index) => (
-            <Panel
-              key={testimonial.id}
-              variant="achievement"
-              hoverable
-              className="relative animate-fade-in"
-              style={{ animationDelay: `${index * 80}ms` }}
-            >
-              <div className="mb-4 flex items-center gap-3">
-                <Chip variant="achievement" className="text-accent-orange font-display font-bold text-sm">
-                  {testimonial.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </Chip>
-                <div>
-                  <p className="text-sm font-display font-bold uppercase tracking-wide text-text">
-                    {testimonial.name}
-                  </p>
-                  <p className="text-xs text-textSecondary">
-                    {testimonial.role} at {testimonial.company}
-                  </p>
-                </div>
-              </div>
-
-              <p className="text-sm leading-relaxed text-textSecondary">
-                &ldquo;{testimonial.quote}&rdquo;
-              </p>
-
-              <div className="mt-4 flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 text-accent-orange fill-accent-orange" />
-                ))}
-              </div>
-            </Panel>
+        <div className="grid gap-6 md:grid-cols-3">
+          {testimonials.map((testimonial, i) => (
+            <TestimonialCard key={testimonial.id} testimonial={testimonial} index={i} />
           ))}
         </div>
+
+        <p className={`mt-6 text-center font-mono text-xs text-textSecondary transition-opacity duration-500 ${headingInView ? "opacity-100" : "opacity-0"}`}>
+          {testimonials.length} / {testimonials.length} achievements unlocked
+        </p>
       </div>
     </section>
   );

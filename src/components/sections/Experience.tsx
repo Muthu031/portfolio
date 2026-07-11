@@ -1,103 +1,75 @@
-import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { Briefcase, CheckCircle2 } from "lucide-react";
+import { Swords, Plus } from "lucide-react";
 import { SectionHeading } from "../ui/SectionHeading";
-import { Chip } from "../ui/Chip";
 import { Panel } from "../ui/Panel";
+import { Badge } from "../ui/Badge";
 import { useInView } from "../../hooks/useInView";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { experience } from "../../data/experience";
+import { difficultyClasses, formatPeriod } from "../../lib/utils";
 
-interface ExperienceProps {
-  onView?: () => void;
-}
+export function Experience() {
+  const [ref, isInView] = useInView({ threshold: 0.1 });
+  const reducedMotion = useReducedMotion();
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08 },
-  },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
-};
-
-export function Experience({ onView }: ExperienceProps) {
-  const [ref, isInView] = useInView({ threshold: 0.2 });
-
-  useEffect(() => {
-    if (isInView && onView) onView();
-  }, [isInView, onView]);
+  const stagger = { hidden: {}, show: { transition: { staggerChildren: reducedMotion ? 0 : 0.12 } } };
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: reducedMotion ? 0 : 0.4 } },
+  };
 
   return (
-    <section id="experience" ref={ref} className="py-20 sm:py-32">
+    <section id="experience" ref={ref} className="py-20 sm:py-28">
       <div className="container">
-        <SectionHeading
-          title="Quest Log"
-          subtitle="Completed stages and milestones"
-          icon={<Briefcase className="h-5 w-5" />}
-        />
+        <SectionHeading index="LOG_01" title="Quest Log" subtitle="Completed and in-progress work assignments." icon={<Swords className="h-5 w-5" />} />
 
-        <div className="relative">
-          <div className="absolute left-4 top-0 hidden h-full w-px bg-border sm:block md:left-6" />
+        <motion.ol
+          className="relative space-y-8 border-l border-border pl-8 sm:pl-10"
+          variants={stagger}
+          initial="hidden"
+          animate={isInView ? "show" : "hidden"}
+        >
+          {experience.map((job) => (
+            <motion.li key={job.id} variants={item} className="relative">
+              <span className="absolute -left-[calc(2rem+5px)] top-1.5 h-3 w-3 rounded-full border-2 border-accent-violet bg-background shadow-[0_0_10px_rgba(124,92,255,0.6)] sm:-left-[calc(2.5rem+5px)]" />
 
-          <motion.div
-            className="space-y-8"
-            variants={container}
-            initial="hidden"
-            animate={isInView ? "show" : "hidden"}
-          >
-            {experience.map((entry) => (
-              <motion.div
-                key={entry.id}
-                className="relative flex gap-6 sm:gap-8"
-                variants={item}
-              >
-                <div className="hidden sm:flex sm:flex-col sm:items-center sm:justify-center">
-                  <Chip variant="active" size="lg">
-                    <CheckCircle2 className="h-5 w-5 md:h-6 md:w-6" />
-                  </Chip>
+              <Panel hoverable className="p-5 sm:p-6">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h3 className="font-display text-xl font-bold uppercase tracking-wide text-text">{job.role}</h3>
+                    <p className="text-sm text-accent-violet">{job.company} · {job.location}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="default" className={difficultyClasses(job.difficulty)}>
+                      {job.difficulty}
+                    </Badge>
+                    <span className="font-mono text-xs text-textSecondary">{formatPeriod(job.start, job.end)}</span>
+                  </div>
                 </div>
 
-                <div className="flex-1 pb-8">
-                  <Panel variant="default" hoverable className="p-5 sm:p-6">
-                    <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                      <div>
-                        <h3 className="text-lg font-display font-bold uppercase tracking-wide text-text">
-                          {entry.role}
-                        </h3>
-                        <p className="text-sm font-medium text-accent-teal">
-                          {entry.company}
-                        </p>
-                      </div>
-                      <span className="inline-flex w-fit items-center rounded-md bg-surfaceAlt px-2.5 py-1 text-xs font-mono text-textSecondary border border-border">
-                        {entry.period}
+                <p className="mt-4 text-sm leading-relaxed text-textSecondary">{job.description}</p>
+
+                <ul className="mt-4 space-y-2">
+                  {job.highlights.map((highlight) => (
+                    <li key={highlight} className="flex items-start gap-2 text-sm text-text">
+                      <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center bg-accent-gold/15 text-accent-gold">
+                        <Plus className="h-3 w-3" />
                       </span>
-                    </div>
+                      {highlight}
+                      <span className="ml-auto shrink-0 font-mono text-xs text-accent-gold">+XP</span>
+                    </li>
+                  ))}
+                </ul>
 
-                    <p className="mt-3 text-sm leading-relaxed text-textSecondary">
-                      {entry.description}
-                    </p>
-
-                    <ul className="mt-4 space-y-2">
-                      {entry.highlights.map((highlight) => (
-                        <li
-                          key={highlight}
-                          className="flex items-start gap-2 text-sm text-textSecondary"
-                        >
-                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-teal shadow-[0_0_4px_rgba(0,212,170,0.5)]" />
-                          {highlight}
-                        </li>
-                      ))}
-                    </ul>
-                  </Panel>
+                <div className="mt-5 flex flex-wrap gap-2 border-t border-border pt-4">
+                  {job.stack.map((tech) => (
+                    <Badge key={tech}>{tech}</Badge>
+                  ))}
                 </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
+              </Panel>
+            </motion.li>
+          ))}
+        </motion.ol>
       </div>
     </section>
   );

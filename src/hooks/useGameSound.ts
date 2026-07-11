@@ -1,42 +1,15 @@
-import { useRef, useCallback } from "react";
-// @ts-ignore - no types for howler
-const Howl = require("howler").Howl;
+import { useEffect, useState } from "react";
+import { isSoundEnabled, playSound, setSoundEnabled, subscribeSound, type SoundKind } from "../lib/sound";
 
-let soundEnabled = false;
-
+/** Reactive wrapper around the sound module — Navbar's toggle and every button-press effect share this. */
 export function useGameSound() {
-  const pressRef = useRef<any>(null);
-  const unlockRef = useRef<any>(null);
+  const [enabled, setEnabled] = useState(isSoundEnabled);
 
-  const initSounds = useCallback(() => {
-    if (pressRef.current) return;
-    pressRef.current = new Howl({
-      src: ["data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="],
-      volume: 0.1,
-    });
-    unlockRef.current = new Howl({
-      src: ["data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="],
-      volume: 0.1,
-    });
-  }, []);
+  useEffect(() => subscribeSound(setEnabled), []);
 
-  const playPress = useCallback(() => {
-    if (!soundEnabled) return;
-    initSounds();
-    pressRef.current?.play();
-  }, [initSounds]);
-
-  const playUnlock = useCallback(() => {
-    if (!soundEnabled) return;
-    initSounds();
-    unlockRef.current?.play();
-  }, [initSounds]);
-
-  const setEnabled = useCallback((enabled: boolean) => {
-    soundEnabled = enabled;
-  }, []);
-
-  return { playPress, playUnlock, soundEnabled, setEnabled };
+  return {
+    enabled,
+    toggle: () => setSoundEnabled(!enabled),
+    play: (kind: SoundKind) => playSound(kind),
+  };
 }
-
-export { soundEnabled };

@@ -1,43 +1,48 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useReducedMotion } from "./useReducedMotion";
 
-const TYPE_SPEED = 40;
-const DELETE_SPEED = 25;
-const PAUSE_DURATION = 2000;
+interface UseTypewriterOptions {
+  typingSpeedMs?: number;
+  deletingSpeedMs?: number;
+  pauseMs?: number;
+}
 
-const WORDS = [
-  "Crafting performant APIs and pixel-perfect interfaces.",
-  "Full-Stack Developer — Node.js, TypeScript, React.js, PostgreSQL.",
-  "Building products that scale, from database to dashboard.",
-];
-
-export function useTypewriter() {
-  const [text, setText] = useState("");
+/** Cycles through `lines`, typing and deleting one character at a time, terminal-style. */
+export function useTypewriter(
+  lines: string[],
+  { typingSpeedMs = 45, deletingSpeedMs = 25, pauseMs = 1800 }: UseTypewriterOptions = {}
+): string {
+  const reducedMotion = useReducedMotion();
+  const [lineIndex, setLineIndex] = useState(0);
+  const [charCount, setCharCount] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [wordIndex, setWordIndex] = useState(0);
 
   useEffect(() => {
-    const currentWord = WORDS[wordIndex];
+    if (reducedMotion || lines.length === 0) return;
 
-    const timeout = setTimeout(
-      () => {
-        if (!isDeleting) {
-          setText(currentWord.slice(0, text.length + 1));
-          if (text === currentWord) {
-            setTimeout(() => setIsDeleting(true), PAUSE_DURATION);
-          }
-        } else {
-          setText(currentWord.slice(0, text.length - 1));
-          if (text === "") {
-            setIsDeleting(false);
-            setWordIndex((prev) => (prev + 1) % WORDS.length);
-          }
-        }
-      },
-      isDeleting ? DELETE_SPEED : TYPE_SPEED
-    );
+    const currentLine = lines[lineIndex % lines.length];
+    const atFullLine = charCount === currentLine.length;
+    const atEmpty = charCount === 0;
 
-    return () => clearTimeout(timeout);
-  }, [text, isDeleting, wordIndex]);
+    let delay = isDeleting ? deletingSpeedMs : typingSpeedMs;
+    if (atFullLine && !isDeleting) delay = pauseMs;
 
-  return text;
+    const timer = setTimeout(() => {
+      if (!isDeleting && atFullLine) {
+        setIsDeleting(true);
+        return;
+      }
+      if (isDeleting && atEmpty) {
+        setIsDeleting(false);
+        setLineIndex((i) => (i + 1) % lines.length);
+        return;
+      }
+      setCharCount((c) => c + (isDeleting ? -1 : 1));
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [charCount, isDeleting, lineIndex, lines, reducedMotion, typingSpeedMs, deletingSpeedMs, pauseMs]);
+
+  if (reducedMotion) return lines[0] ?? "";
+  return (lines[lineIndex % lines.length] ?? "").slice(0, charCount);
 }

@@ -1,20 +1,23 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-export function useScrollProgress() {
+/** 0-100 scroll completion through the whole page — feeds the HUD nav bar and the corner XP ring. */
+export function useScrollProgress(): number {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (docHeight > 0) {
-        setProgress(Math.min((scrollTop / docHeight) * 100, 100));
-      }
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+      setProgress(Math.min(100, Math.max(0, pct)));
     };
 
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
   }, []);
 
   return progress;
